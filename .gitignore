@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.DS_Store
+*.log
+
+# Skill and tooling scaffolding — local to this working copy, not project code
+.agents/
+.claude/
+.codex/
+.taste-skill/
+.impeccable/review/tiles/
+skills-lock.json

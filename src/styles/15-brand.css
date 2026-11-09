@@ -1,0 +1,69 @@
+/* The illustration kit (clients/<id>/brand.js). One pen draws it all: lines of one weight that keep their
+   weight at any size, round ends; solid shapes only for the bean head, hands, shoes, and crema accents.
+   --fig-line is the pen and the head, --fig-fill the ground it is cut from, --fig-accent the crema. */
+:root { --lw: 2.4px; }
+.regular, .ico, .stamp, .shine, .scrawl, .branch {
+  --fig-line: var(--c-on-brand);
+  --fig-fill: var(--c-brand);
+  --fig-accent: var(--c-crema);
+}
+.on-light, .ground-light { --fig-line: var(--c-brand-deep); --fig-fill: var(--c-ground); }
+.on-light :is(.regular, .ico, .stamp, .shine, .scrawl, .branch),
+:is(.regular, .ico, .stamp, .shine, .scrawl, .branch).on-light { --fig-line: var(--c-brand-deep); --fig-fill: var(--c-ground); }
+.ground-deep :is(.regular, .ico, .stamp) { --fig-fill: var(--c-brand-deep); }
+.ground-espresso :is(.regular, .ico, .stamp, .shine, .scrawl) { --fig-line: var(--c-ground); --fig-fill: var(--c-espresso); }
+
+.regular { display: block; overflow: visible; }
+.regular *, .ico *, .scrawl *, .shine * { vector-effect: non-scaling-stroke; }
+.regular path, .regular circle, .regular rect, .regular ellipse,
+.ico path, .ico circle, .ico rect { stroke: var(--fig-line); stroke-width: var(--lw); stroke-linecap: round; stroke-linejoin: round; fill: none; }
+.regular .f-fill, .ico .f-fill { fill: var(--fig-fill); }
+.regular .f-solid, .regular .f-head, .ico .f-head { fill: var(--fig-line); stroke: none; }
+.regular .f-accent, .ico .f-accent { fill: var(--fig-accent); }
+.regular .f-cut, .ico .f-cut { fill: var(--fig-fill); stroke: none; }
+.regular .f-cut-line { stroke: var(--fig-fill); stroke-width: calc(var(--lw) * 1.1); }
+.regular .f-crease, .ico .f-crease, .beanmark__crease { fill: none; stroke: var(--fig-fill); stroke-width: calc(var(--lw) * 2.4); stroke-linecap: round; }
+.regular .f-watch .f-face { stroke-width: calc(var(--lw) * 0.9); }
+/* Steam drifts up off a hot cup and fades, forever, slowly. */
+.regular .f-steam path, .ico .f-steam path { stroke-dasharray: 12 22; }
+@media (prefers-reduced-motion: no-preference) {
+  .regular .f-steam path { animation: steam 3.2s linear infinite; }
+  .regular .f-steam path + path { animation-delay: -1.6s; }
+}
+@keyframes steam { from { stroke-dashoffset: 34; } to { stroke-dashoffset: 0; } }
+
+.ico { display: block; width: 48px; height: 48px; overflow: visible; }
+
+/* The stamp: words around a ring, a mark in the middle, turning slowly. */
+.stamp { display: block; overflow: visible; --stamp-bg: var(--c-crema); --stamp-fg: var(--c-espresso); }
+.stamp__disc { fill: var(--stamp-bg); }
+.stamp text { fill: var(--stamp-fg); font-family: var(--font-text); font-size: 17px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; }
+.stamp__ring { transform-box: fill-box; transform-origin: center; }
+.stamp__mark { --fig-line: var(--stamp-fg); --fig-fill: var(--stamp-bg); --fig-accent: var(--stamp-bg); }
+.stamp__mark path, .stamp__mark circle, .stamp__mark rect { stroke: var(--fig-line); stroke-width: 2.2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.stamp__mark .f-head { fill: var(--fig-line); stroke: none; }
+.stamp__mark .f-crease { stroke: var(--fig-fill); stroke-width: 26; }
+.stamp__mark .f-fill { fill: var(--fig-fill); }
+@media (prefers-reduced-motion: no-preference) { .stamp__ring { animation: turn 40s linear infinite; } }
+@keyframes turn { to { rotate: 360deg; } }
+
+.shine { display: block; overflow: visible; }
+.shine path { fill: none; stroke: var(--fig-accent); stroke-width: 3px; stroke-linecap: round; }
+.scrawl { display: block; overflow: visible; }
+.scrawl path { fill: none; stroke: var(--fig-line); stroke-width: 2px; stroke-linecap: round; stroke-linejoin: round; }
+
+/* The wordmark's O: a ring, a pin and one hand, set inline at x-height. */
+.ohand { display: inline-block; height: 0.62em; width: auto; overflow: visible; vertical-align: 0; margin-right: 0.02em; }
+.ohand__ring { fill: none; stroke: currentColor; stroke-width: 17; }
+.ohand__hand { transform-box: view-box; transform-origin: 48px 50px; }
+.ohand__hand line { stroke: currentColor; stroke-width: 12; stroke-linecap: round; }
+.ohand__pin { fill: currentColor; }
+
+.beanmark { display: inline-block; height: 0.62em; width: auto; vertical-align: 0.02em; --fig-fill: var(--bean-cut, var(--c-ground)); }
+.beanmark .f-head { fill: currentColor; }
+.beanmark__crease { stroke-width: 11; }
+
+/* The crema full stop: display lines end on one. */
+.stop { color: var(--c-crema); }
+
+.branch { display: block; width: 100%; height: auto; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; fill: none; }

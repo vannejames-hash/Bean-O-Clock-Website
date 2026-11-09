@@ -1,0 +1,559 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-09T08:30:20.693Z",
+  "title": "Design System: Digital Storefront (instance: Bean O' Clock Coffee To-Go, V4)",
+  "extensions": {
+    "colorMeta": {
+      "brand": {
+        "role": "primary",
+        "displayName": "Logo Green",
+        "canonical": "oklch(48.9% 0.042 146.1)",
+        "tonalRamp": [
+          "#060D07",
+          "#1B281C",
+          "#334534",
+          "#4E644F",
+          "#6D846E",
+          "#8FA68F",
+          "#B8CAB9",
+          "#E7F2E7"
+        ]
+      },
+      "brand-deep": {
+        "role": "primary",
+        "displayName": "Deep Bench Green",
+        "canonical": "oklch(39.9% 0.036 146.3)",
+        "tonalRamp": [
+          "#070D07",
+          "#1C271D",
+          "#354535",
+          "#516352",
+          "#708371",
+          "#91A592",
+          "#BAC9BA",
+          "#E8F1E8"
+        ]
+      },
+      "crema": {
+        "role": "secondary",
+        "displayName": "Crema",
+        "canonical": "oklch(69.0% 0.120 63.4)",
+        "tonalRamp": [
+          "#190500",
+          "#3E1800",
+          "#662F00",
+          "#8B4B00",
+          "#AE6C22",
+          "#D18E4B",
+          "#ECB98A",
+          "#FFE8CB"
+        ]
+      },
+      "crema-soft": {
+        "role": "secondary",
+        "displayName": "Crema Foam",
+        "canonical": "oklch(85.5% 0.065 71.3)",
+        "tonalRamp": [
+          "#120901",
+          "#312009",
+          "#533A19",
+          "#755732",
+          "#967751",
+          "#B89873",
+          "#D8C0A4",
+          "#FBECDA"
+        ]
+      },
+      "espresso": {
+        "role": "tertiary",
+        "displayName": "Espresso",
+        "canonical": "oklch(26.1% 0.024 49.6)",
+        "tonalRamp": [
+          "#0F0A08",
+          "#2B221D",
+          "#4A3D36",
+          "#695A52",
+          "#8A7971",
+          "#AB9B92",
+          "#CEC1BB",
+          "#F5EDE8"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Roast Ink",
+        "canonical": "oklch(26.3% 0.016 58.8)",
+        "tonalRamp": [
+          "#0D0A08",
+          "#28231F",
+          "#463E38",
+          "#655C55",
+          "#857B74",
+          "#A69C95",
+          "#CAC2BD",
+          "#F2EDEA"
+        ]
+      },
+      "ink-soft": {
+        "role": "neutral",
+        "displayName": "Faded Roast",
+        "canonical": "oklch(48.8% 0.024 62.5)",
+        "tonalRamp": [
+          "#0E0A07",
+          "#2A221C",
+          "#483D34",
+          "#685B50",
+          "#887A6F",
+          "#A99C90",
+          "#CDC2B9",
+          "#F4EDE7"
+        ]
+      },
+      "ground": {
+        "role": "neutral",
+        "displayName": "Logo Cream",
+        "canonical": "oklch(96.0% 0.010 72.7)",
+        "tonalRamp": [
+          "#0C0B09",
+          "#262421",
+          "#433F3B",
+          "#615D58",
+          "#817C77",
+          "#A29E98",
+          "#C7C3BF",
+          "#F0EEEB"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Paper",
+        "canonical": "oklch(98.4% 0.006 59.7)",
+        "tonalRamp": [
+          "#0C0B0A",
+          "#252422",
+          "#423F3D",
+          "#605D5A",
+          "#807C7A",
+          "#A19E9B",
+          "#C6C3C1",
+          "#F0EEED"
+        ]
+      },
+      "on-brand": {
+        "role": "neutral",
+        "displayName": "Cream on Green",
+        "canonical": "oklch(96.0% 0.010 72.7)",
+        "tonalRamp": [
+          "#0C0B09",
+          "#262421",
+          "#433F3B",
+          "#615D58",
+          "#817C77",
+          "#A29E98",
+          "#C7C3BF",
+          "#F0EEEB"
+        ]
+      },
+      "on-brand-soft": {
+        "role": "neutral",
+        "displayName": "Soft Cream on Green",
+        "canonical": "oklch(90.5% 0.017 128.7)",
+        "tonalRamp": [
+          "#0A0C09",
+          "#22251F",
+          "#3D4139",
+          "#5B6055",
+          "#7A7F75",
+          "#9BA196",
+          "#C2C6BD",
+          "#EDEFEA"
+        ]
+      },
+      "field-white": {
+        "role": "neutral",
+        "displayName": "Field White",
+        "canonical": "oklch(100.0% 0.000 89.9)",
+        "tonalRamp": [
+          "#0B0B0B",
+          "#242424",
+          "#404040",
+          "#5D5D5D",
+          "#7D7D7D",
+          "#9E9E9E",
+          "#C4C4C4",
+          "#EEEEEE"
+        ]
+      },
+      "error": {
+        "role": "error",
+        "displayName": "Brick Error",
+        "canonical": "oklch(49.0% 0.144 30.0)",
+        "tonalRamp": [
+          "#1F0000",
+          "#480703",
+          "#76160D",
+          "#9F3427",
+          "#C45647",
+          "#E87969",
+          "#FFAB9C",
+          "#FFE0D6"
+        ]
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "rgba(43, 35, 29, 0.14)"
+      },
+      "line-on-brand": {
+        "role": "neutral",
+        "displayName": "Hairline on Green",
+        "canonical": "rgba(246, 241, 235, 0.3)"
+      }
+    },
+    "typographyMeta": {
+      "display-hero": {
+        "displayName": "Display hero",
+        "purpose": "The two-line hero lockup only, fitted to its column with container units; one italic aside, crema stop."
+      },
+      "display-place": {
+        "displayName": "Display place",
+        "purpose": "The Visit heading."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section h2s, sentence case, crema stop."
+      },
+      "sign-off": {
+        "displayName": "Sign-off",
+        "purpose": "The footer sign-off; the shop name in the italic."
+      },
+      "aside-band": {
+        "displayName": "Aside band",
+        "purpose": "The cup sleeve: menu facts in the italic, one line, between two minute tracks."
+      },
+      "photo-word": {
+        "displayName": "Photo word",
+        "purpose": "The step written across each craft photograph, after a crema number disc."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "h3s, menu category heads, sheet titles, label titles."
+      },
+      "item-name": {
+        "displayName": "Item name",
+        "purpose": "Best-seller rows."
+      },
+      "poster-name": {
+        "displayName": "Poster name",
+        "purpose": "The shop's poster drinks, in the italic."
+      },
+      "statement": {
+        "displayName": "Statement",
+        "purpose": "The craft paragraph on espresso."
+      },
+      "lede": {
+        "displayName": "Lede",
+        "purpose": "Section intros, max 44ch."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Running text, menu rows, forms."
+      },
+      "action": {
+        "displayName": "Action",
+        "purpose": "Buttons and text actions, sentence case."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "The only uppercase voice: legends, group heads, column heads; stamp ring, EST. and the wordmark are kin."
+      }
+    },
+    "shadows": [
+      {
+        "name": "printed-edge",
+        "value": "0 2px 0 color-mix(in srgb, var(--btn-bg) 62%, var(--c-espresso))",
+        "purpose": "Every solid pill button: tonal to its own fill, vertical only, 2px; 3px on hover, 1px pressed."
+      },
+      {
+        "name": "sticker-lift",
+        "value": "0 0 0 9px var(--c-on-brand), 0 22px 30px -14px rgb(0 0 0 / 0.5)",
+        "purpose": "Die-cut poster stickers (5px ring and 0 12px 18px -10px on phones); the watch face uses 0 30px 40px -24px under a 10px cream ring."
+      },
+      {
+        "name": "sheet-lift",
+        "value": "0 24px 64px color-mix(in srgb, var(--c-ink) 18%, transparent)",
+        "purpose": "Order drawer, item sheet, delivery note."
+      },
+      {
+        "name": "toast-lift",
+        "value": "0 12px 32px color-mix(in srgb, var(--c-ink) 24%, transparent)",
+        "purpose": "The add-to-order toast."
+      },
+      {
+        "name": "segment-press",
+        "value": "0 1px 2px color-mix(in srgb, var(--c-ink) 12%, transparent), 0 2px 8px color-mix(in srgb, var(--c-ink) 6%, transparent)",
+        "purpose": "The selected segmented option."
+      },
+      {
+        "name": "hairline",
+        "value": "inset 0 0 0 1px var(--c-line)",
+        "purpose": "In-page outlines: chips, fields, steppers, the visit panel, category marks; 1.5px on quiet buttons and add-buttons."
+      },
+      {
+        "name": "scrim",
+        "value": "color-mix(in srgb, var(--c-ink) 45%, transparent)",
+        "purpose": "Sheet backdrop."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(0.23, 1, 0.32, 1)",
+        "purpose": "State, hover, press, reveals."
+      },
+      {
+        "name": "ease-in-out",
+        "value": "cubic-bezier(0.77, 0, 0.175, 1)",
+        "purpose": "The pen: drawn lines."
+      },
+      {
+        "name": "ease-drawer",
+        "value": "cubic-bezier(0.32, 0.72, 0, 1)",
+        "purpose": "Sheets, the action bar, masks, the rising sun, the menu pill."
+      },
+      {
+        "name": "ease-pop",
+        "value": "cubic-bezier(0.34, 1.56, 0.64, 1)",
+        "purpose": "Stickers, stamps, labels, the pin: overshoot."
+      },
+      {
+        "name": "reveal",
+        "value": "translate 0 115% to 0, 1000ms ease-out",
+        "purpose": "[data-m=\"rise\"]: a headline rises in its own clipped line."
+      },
+      {
+        "name": "mask",
+        "value": "clip-path out of the shape, 1200ms ease-drawer; image scale 1.15 to 1 over 1600ms",
+        "purpose": "[data-m=\"mask\"]: photographs open out of arches and discs."
+      },
+      {
+        "name": "draw",
+        "value": "stroke-dashoffset 1 to 0, 2000ms ease-in-out",
+        "purpose": "[data-m=\"draw\"]: the branch, the craft line, the route; the scroll-drawn crema thread on wide screens."
+      },
+      {
+        "name": "scale",
+        "value": "scale 0.4 and rotate -18deg to rest, 620ms ease-pop, 120ms stagger",
+        "purpose": "[data-m=\"pop\"]: stickers, stamps, the watch."
+      },
+      {
+        "name": "slide",
+        "value": "translate -4% to -26% across the viewport pass",
+        "purpose": "The cup sleeve; the one scroll-linked slide."
+      },
+      {
+        "name": "drift",
+        "value": "steam 3.2s linear infinite; stamp 40s per turn",
+        "purpose": "Slow, endless, small."
+      },
+      {
+        "name": "transform",
+        "value": "pose() cubic ease-in-out, 700ms default; walk cycle 860ms",
+        "purpose": "The barista changes pose (app.js applyPose, pose, loop, walk)."
+      },
+      {
+        "name": "press",
+        "value": "160ms ease-out",
+        "purpose": "Buttons drop 2px; add-buttons 0.9; stepper buttons 0.88; icon buttons 0.92."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "animations and transitions 1ms; steam and stamps off",
+        "purpose": "Everything rests in its final state."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "xs",
+        "value": "420px"
+      },
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "900px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Dark Button",
+      "kind": "button",
+      "refersTo": "button-dark",
+      "description": "The default action: a deep-green pill with a tonal 2px printed edge that presses down.",
+      "html": "<button class=\"ds-btn ds-btn-dark\">Choose a pickup time <svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M5 12h14\"/><path d=\"m13 6 6 6-6 6\"/></svg></button>",
+      "css": ".ds-btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 54px; padding: 0 26px; border: 0; border-radius: 999px; font-family: var(--font-text, Figtree, 'Segoe UI', system-ui, sans-serif); font-size: 16px; font-weight: 750; letter-spacing: 0.005em; cursor: pointer; transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1), box-shadow 160ms cubic-bezier(0.23, 1, 0.32, 1), background-color 200ms ease; } .ds-btn svg { transition: transform 200ms cubic-bezier(0.23, 1, 0.32, 1); } .ds-btn-dark { background: var(--c-brand-deep, #3B4D3C); color: var(--c-on-brand, #F6F1EB); box-shadow: 0 2px 0 color-mix(in srgb, var(--c-brand-deep, #3B4D3C) 62%, var(--c-espresso, #2E211A)); } .ds-btn-dark:hover { background: var(--c-brand, #516752); transform: translateY(-1px); box-shadow: 0 3px 0 color-mix(in srgb, var(--c-brand, #516752) 62%, var(--c-espresso, #2E211A)); } .ds-btn-dark:hover svg { transform: translateX(3px); } .ds-btn-dark:active { transform: translateY(2px); box-shadow: 0 1px 0 color-mix(in srgb, var(--c-brand-deep, #3B4D3C) 62%, var(--c-espresso, #2E211A)); } .ds-btn:focus-visible { outline: 2px solid var(--c-brand-deep, #3B4D3C); outline-offset: 3px; }"
+    },
+    {
+      "name": "Light Button",
+      "kind": "button",
+      "refersTo": "button-light",
+      "description": "The action on green grounds: a cream pill with espresso text.",
+      "html": "<div class=\"ds-on-green\"><button class=\"ds-btn ds-btn-light\">Order ahead <svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M5 12h14\"/><path d=\"m13 6 6 6-6 6\"/></svg></button></div>",
+      "css": ".ds-on-green { background: var(--c-brand, #516752); padding: 24px; } .ds-btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 54px; padding: 0 26px; border: 0; border-radius: 999px; font-family: var(--font-text, Figtree, 'Segoe UI', system-ui, sans-serif); font-size: 16px; font-weight: 750; letter-spacing: 0.005em; cursor: pointer; transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1), box-shadow 160ms cubic-bezier(0.23, 1, 0.32, 1), background-color 200ms ease; } .ds-btn-light { background: var(--c-on-brand, #F6F1EB); color: var(--c-espresso, #2E211A); box-shadow: 0 2px 0 color-mix(in srgb, var(--c-on-brand, #F6F1EB) 62%, var(--c-espresso, #2E211A)); } .ds-btn-light:hover { background: #fff; transform: translateY(-1px); box-shadow: 0 3px 0 color-mix(in srgb, #fff 62%, var(--c-espresso, #2E211A)); } .ds-btn-light:active { transform: translateY(2px); box-shadow: 0 1px 0 color-mix(in srgb, var(--c-on-brand, #F6F1EB) 62%, var(--c-espresso, #2E211A)); } .ds-btn-light:focus-visible { outline: 2px solid var(--c-on-brand, #F6F1EB); outline-offset: 3px; }"
+    },
+    {
+      "name": "Quiet Button",
+      "kind": "button",
+      "refersTo": "button-quiet",
+      "description": "The secondary path: a transparent pill with an inset hairline.",
+      "html": "<button class=\"ds-btn ds-btn-quiet\">Delivery</button>",
+      "css": ".ds-btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 54px; padding: 0 26px; border: 0; border-radius: 999px; font-family: var(--font-text, Figtree, 'Segoe UI', system-ui, sans-serif); font-size: 16px; font-weight: 750; letter-spacing: 0.005em; cursor: pointer; transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1), box-shadow 160ms cubic-bezier(0.23, 1, 0.32, 1), background-color 200ms ease; } .ds-btn-quiet { background: transparent; color: var(--c-ink, #2B231D); box-shadow: inset 0 0 0 1.5px var(--c-line, rgba(43, 35, 29, 0.14)); } .ds-btn-quiet:hover { box-shadow: inset 0 0 0 1.5px var(--c-ink, #2B231D); } .ds-btn-quiet:active { transform: translateY(2px); } .ds-btn-quiet:focus-visible { outline: 2px solid var(--c-brand-deep, #3B4D3C); outline-offset: 3px; }"
+    },
+    {
+      "name": "Menu Row",
+      "kind": "custom",
+      "refersTo": "menu-row",
+      "description": "A priced menu row: name and description, tabular price, a hairline add-button that fills on hover.",
+      "html": "<button class=\"ds-row\"><span><span class=\"ds-row-name\">Salty cream latte</span><span class=\"ds-row-desc\">Espresso and milk under a salted cream cap</span></span><span class=\"ds-row-price\">₱150</span><span class=\"ds-row-add\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" aria-hidden=\"true\"><path d=\"M12 5v14\"/><path d=\"M5 12h14\"/></svg></span></button>",
+      "css": ".ds-row { width: 100%; min-height: 60px; display: grid; grid-template-columns: minmax(0, 1fr) auto 44px; align-items: center; column-gap: 14px; padding: 10px 0; text-align: left; background: none; border: 0; border-bottom: 1px solid var(--c-line, rgba(43, 35, 29, 0.14)); font-family: var(--font-text, Figtree, 'Segoe UI', system-ui, sans-serif); color: var(--c-ink, #2B231D); cursor: pointer; } .ds-row-name { display: block; font-size: 17px; font-weight: 500; transition: translate 260ms cubic-bezier(0.23, 1, 0.32, 1); } .ds-row-desc { display: block; margin-top: 2px; font-size: 16px; color: var(--c-ink-soft, #6A5D52); } .ds-row-price { font-size: 17px; font-weight: 500; font-variant-numeric: tabular-nums; } .ds-row-add { width: 40px; height: 40px; justify-self: end; display: grid; place-items: center; border-radius: 50%; color: var(--c-brand-deep, #3B4D3C); box-shadow: inset 0 0 0 1.5px var(--c-line, rgba(43, 35, 29, 0.14)); transition: background-color 200ms ease, color 200ms ease, transform 160ms cubic-bezier(0.23, 1, 0.32, 1); } .ds-row:hover .ds-row-name { translate: 4px 0; } .ds-row:hover .ds-row-add { background: var(--c-brand-deep, #3B4D3C); color: var(--c-on-brand, #F6F1EB); box-shadow: none; } .ds-row:active .ds-row-add { transform: scale(0.9); } .ds-row:focus-visible { outline: 2px solid var(--c-brand-deep, #3B4D3C); outline-offset: 3px; }"
+    },
+    {
+      "name": "Pickup Chip",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "A 44px choice pill; selected fills deep green.",
+      "html": "<div class=\"ds-chips\"><label class=\"ds-chip\"><input type=\"radio\" name=\"ds-slot\" checked><span>9:30 AM</span></label><label class=\"ds-chip\"><input type=\"radio\" name=\"ds-slot\"><span>10:00 AM</span></label></div>",
+      "css": ".ds-chips { display: flex; gap: 8px; font-family: var(--font-text, Figtree, 'Segoe UI', system-ui, sans-serif); } .ds-chip { position: relative; } .ds-chip input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; } .ds-chip span { display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border-radius: 999px; box-shadow: inset 0 0 0 1px var(--c-line, rgba(43, 35, 29, 0.14)); font-size: 16px; font-variant-numeric: tabular-nums; color: var(--c-ink, #2B231D); transition: background-color 200ms ease, color 200ms ease, box-shadow 200ms ease; } .ds-chip input:not(:checked):hover + span { box-shadow: inset 0 0 0 1px var(--c-ink, #2B231D); } .ds-chip input:checked + span { background: var(--c-brand-deep, #3B4D3C); color: var(--c-on-brand, #F6F1EB); box-shadow: none; } .ds-chip input:focus-visible + span { outline: 2px solid var(--c-brand-deep, #3B4D3C); outline-offset: 2px; }"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "text-field",
+      "description": "White, softly rounded, an inset hairline that thickens to deep green on focus.",
+      "html": "<label class=\"ds-field\"><span>Your name</span><input type=\"text\" placeholder=\"For the cup\"></label>",
+      "css": ".ds-field { display: grid; gap: 8px; font-family: var(--font-text, Figtree, 'Segoe UI', system-ui, sans-serif); color: var(--c-ink, #2B231D); } .ds-field span { font-weight: 500; } .ds-field input { min-height: 52px; padding: 12px 14px; border: 0; border-radius: 18px; background: #fff; box-shadow: inset 0 0 0 1px var(--c-line, rgba(43, 35, 29, 0.14)); font: inherit; font-size: 17px; transition: box-shadow 160ms ease; } .ds-field input:focus { outline: none; box-shadow: inset 0 0 0 2px var(--c-brand-deep, #3B4D3C); }"
+    },
+    {
+      "name": "Navigation",
+      "kind": "nav",
+      "refersTo": "nav",
+      "description": "Sticky logo-green bar: wordmark in tracked capitals, drawn-underline links, a light order pill with a crema count.",
+      "html": "<nav class=\"ds-nav\"><span class=\"ds-nav-word\">Bean O' Clock<small>Coffee to-go</small></span><span class=\"ds-nav-links\"><a href=\"#\">Our coffee</a><a href=\"#\">Menu</a><a href=\"#\">Visit</a></span><button class=\"ds-nav-order\">Order ahead <span class=\"ds-count\">2</span></button></nav>",
+      "css": ".ds-nav { display: flex; align-items: center; gap: 24px; height: 64px; padding: 0 24px; background: var(--c-brand, #516752); color: var(--c-on-brand, #F6F1EB); font-family: var(--font-text, Figtree, 'Segoe UI', system-ui, sans-serif); } .ds-nav-word { display: grid; font-size: 15px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; line-height: 1.15; } .ds-nav-word small { font-size: 10px; font-weight: 600; letter-spacing: 0.3em; color: var(--c-on-brand-soft, #DCE2D6); } .ds-nav-links { margin-left: auto; display: flex; gap: 32px; } .ds-nav-links a { color: inherit; text-decoration: none; font-size: 16px; font-weight: 600; background: linear-gradient(currentColor, currentColor) 0 100% / 0% 1.5px no-repeat; transition: background-size 320ms cubic-bezier(0.23, 1, 0.32, 1); } .ds-nav-links a:hover, .ds-nav-links a:focus-visible { background-size: 100% 1.5px; outline: none; } .ds-nav-order { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 18px; border: 0; border-radius: 999px; background: var(--c-on-brand, #F6F1EB); color: var(--c-espresso, #2E211A); box-shadow: 0 2px 0 color-mix(in srgb, var(--c-on-brand, #F6F1EB) 62%, var(--c-espresso, #2E211A)); font: inherit; font-size: 15px; font-weight: 750; cursor: pointer; transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1), box-shadow 160ms cubic-bezier(0.23, 1, 0.32, 1); } .ds-nav-order:hover { transform: translateY(-1px); box-shadow: 0 3px 0 color-mix(in srgb, var(--c-on-brand, #F6F1EB) 62%, var(--c-espresso, #2E211A)); } .ds-nav-order:active { transform: translateY(2px); box-shadow: 0 1px 0 color-mix(in srgb, var(--c-on-brand, #F6F1EB) 62%, var(--c-espresso, #2E211A)); } .ds-nav-order:focus-visible { outline: 2px solid var(--c-on-brand, #F6F1EB); outline-offset: 3px; } .ds-count { display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 999px; background: var(--c-crema, #CF8A45); color: var(--c-espresso, #2E211A); font-size: 12px; font-weight: 800; font-variant-numeric: tabular-nums; }"
+    },
+    {
+      "name": "Minute Track",
+      "kind": "custom",
+      "refersTo": "minute-track",
+      "description": "The logo's dial unrolled into a strip of ticks, every fifth long: the brand's border.",
+      "html": "<span class=\"ds-ticks\" aria-hidden=\"true\"></span>",
+      "css": ".ds-ticks { display: block; width: 100%; height: 14px; background: var(--c-crema, #CF8A45); -webkit-mask: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='70' height='14'%3E%3Cg stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M7 1v12M21 4v6M35 4v6M49 4v6M63 4v6'/%3E%3C/g%3E%3C/svg%3E\") 0 0 / 70px 14px repeat-x; mask: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='70' height='14'%3E%3Cg stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M7 1v12M21 4v6M35 4v6M49 4v6M63 4v6'/%3E%3C/g%3E%3C/svg%3E\") 0 0 / 70px 14px repeat-x; }"
+    },
+    {
+      "name": "Poster Sticker",
+      "kind": "card",
+      "refersTo": "poster-sticker",
+      "description": "The shop's own drink, die-cut round with a cream ring and a lift, turned a few degrees; it straightens on hover.",
+      "html": "<div class=\"ds-on-green\"><button class=\"ds-sticker\"><span class=\"ds-sticker-photo\"></span><span class=\"ds-sticker-name\">Strawberry Oreo</span><span class=\"ds-sticker-price\">₱160</span></button></div>",
+      "css": ".ds-on-green { background: var(--c-brand, #516752); padding: 32px; } .ds-sticker { display: grid; justify-items: start; gap: 4px; background: none; border: 0; padding: 0; color: var(--c-on-brand, #F6F1EB); text-align: left; cursor: pointer; } .ds-sticker-photo { width: 160px; aspect-ratio: 1; margin-bottom: 18px; border-radius: 50%; background: var(--c-brand-deep, #3B4D3C); box-shadow: 0 0 0 9px var(--c-on-brand, #F6F1EB), 0 22px 30px -14px rgb(0 0 0 / 0.5); rotate: 4deg; transition: rotate 420ms cubic-bezier(0.34, 1.56, 0.64, 1), scale 420ms cubic-bezier(0.34, 1.56, 0.64, 1); } .ds-sticker:hover .ds-sticker-photo, .ds-sticker:focus-visible .ds-sticker-photo { rotate: 0deg; scale: 1.03; } .ds-sticker:focus-visible { outline: 2px solid var(--c-on-brand, #F6F1EB); outline-offset: 6px; } .ds-sticker-name { font-family: var(--font-display, Fraunces, Georgia, serif); font-style: italic; font-weight: 560; font-variation-settings: 'SOFT' 100; font-size: 26px; letter-spacing: -0.02em; } .ds-sticker-price { font-family: var(--font-text, Figtree, 'Segoe UI', system-ui, sans-serif); font-weight: 700; font-variant-numeric: tabular-nums; color: var(--c-on-brand-soft, #DCE2D6); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "A Day with the Regular",
+    "overview": "This is a shared storefront system whose job is to carry each shop's own identity. A client is a folder, `clients/<id>/`, of five config files: `business.js` (name, contact, location, ordering), `menu.js` (categories, groups, items, prices, add-ons, featured picks), `theme.js` (colour roles and the display and text faces, injected at build as `:root` custom properties `--c-*`, `--font-display`, `--display-wght`, `--font-text`, plus `@font-face` rules), `content.js` (copy, images with alt text and a `standIn` flag) and the optional `brand.js` (an illustration kit: a posable figure rig and its pose table, icons, stamp, shine, arrow, branch, wordmark O, bean). Everything in `src/` (spacing, radius, easing, the type-size clamps, component anatomy, the motion verbs, the figure engine) is system-level and identical for every client. `build.mjs` loads `brand.js` only if it exists; every section checks for each kit part and falls back to type and photographs: no figure, no stamp, no shine; the visit pin falls back to the plain UI pin; the drawer's pickup readout falls back to a small dial whose hands turn to the chosen time; the placed order falls back to a drawn check mark. The values in the frontmatter are Bean O' Clock's.\n\nBean O' Clock V4 is the shop's two-tone logo world (logo green, logo cream) made into an everyday coffee world: a soft, warm serif in sentence case with its italic as the brand's aside, a friendly geometric sans for everything functional, crema as the one accent, and one pen that draws a small barista whose head is the logo's own bean. Time lives in the barista's props and day (a watch, a to-go cup, a walk), never in its body. The logo is rebuilt as the hero scene: the coffee rises behind a cream hill like the logo's sun, inside an arc of dial ticks, with EST. and the year set on the ground. Photographs are opened out of arches and discs; the shop's own poster drinks are die-cut stickers. It is a storefront first: the menu is a working priced list, and ordering is never behind a brand moment.\n\nMotion has seven verbs used the same way everywhere: reveal, mask, draw, scale, slide, drift and transform. Content is in the markup and visible without JS; motion runs only with JS and without reduced motion, and every figure is drawn in its final pose before any script touches it.",
+    "keyCharacteristics": [
+      "Per-client colour, faces, copy, menu and optional kit; system-level everything else.",
+      "Four grounds: logo green, the cream ground, espresso for the craft band, deep green for the footer; paper only for raised surfaces.",
+      "Display is a soft serif in sentence case; one word per line may go to the italic; display sentences end on a crema full stop.",
+      "One pen: one stroke weight that never scales, round ends, solids only for the bean head, hands, shoes and crema accents.",
+      "Crema is the one accent and is never running text.",
+      "Pill buttons with a tonal printed edge that press down.",
+      "Photographs open out of arches and discs; the shop's own drinks are round stickers."
+    ],
+    "rules": [
+      {
+        "name": "The Theme Owns Identity Rule",
+        "body": "Shared code reads `--c-*`; it never names a client hue. A new client changes `theme.js` (and optionally `brand.js`), not a stylesheet.",
+        "section": "colors"
+      },
+      {
+        "name": "The One Accent Rule",
+        "body": "Crema marks things (an apron, a sleeve, a stamp, a stop, a tick, a line, a badge); it is never the colour of running text, links or controls. Words set on crema are espresso.",
+        "section": "colors"
+      },
+      {
+        "name": "The Grounds Rule",
+        "body": "A section is one of four grounds: logo green, cream, espresso or (footer only) deep green. Adjacent cream sections share the ground and are divided by a hairline or a minute track, never by a fifth tint. Dark grounds carry a fine grain (fractal noise at 0.2 opacity, multiplied) under the content, the paper of the shop's printed boards.",
+        "section": "colors"
+      },
+      {
+        "name": "The Sentence Case Rule",
+        "body": "Display is always sentence case in the soft serif. Uppercase exists only in the label voice: small, tracked (0.12em to 0.3em), heavy, in the text face.",
+        "section": "typography"
+      },
+      {
+        "name": "The One Aside Rule",
+        "body": "At most one word or phrase per display line goes to the italic (the noun \"bean\", the shop's name, a place's second line); whole lines in italic are reserved for the asides themselves: the sleeve, poster names, photo words, notes.",
+        "section": "typography"
+      },
+      {
+        "name": "The Crema Stop Rule",
+        "body": "Display sentences end on a full stop in crema (`stop()` wraps sentence-final stops in `.stop`). A decimal point is never coloured.",
+        "section": "typography"
+      },
+      {
+        "name": "The Tabular Price Rule",
+        "body": "Every price, count, slot time, total, clock time and map pin uses tabular numerals.",
+        "section": "typography"
+      },
+      {
+        "name": "The Die-Cut Lift Rule",
+        "body": "In-page shadows belong only to die-cut objects (round stickers, the watch face) and always come with a cream ring; panels, labels, rows and photographs in shapes stay flat and are outlined by an inset hairline or nothing.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Printed Edge Rule",
+        "body": "A button's edge is its own colour, darker, straight down, 2px; it grows to 3px on hover and compresses to 1px as the button presses 2px down. Never an x-offset, never black or ink, never on anything but a solid pill button.",
+        "section": "elevation"
+      },
+      {
+        "name": "The One Pen Rule",
+        "body": "Every kit drawing uses the same non-scaling stroke and round ends; details are cut out of solids in the ground colour, never outlined, and the only second colour is crema.",
+        "section": "shapes"
+      },
+      {
+        "name": "The Props Tell Time Rule",
+        "body": "Time lives in the barista's props and day (the watch, the cup, the walk), never in its body; a new use picks a pose from the table and a job for that section, never decoration on its own.",
+        "section": "shapes"
+      }
+    ],
+    "dos": [
+      "**Do** read every colour, face and display weight from the theme properties; a new client is new config files, and optionally a `brand.js`.",
+      "**Do** keep every section working without the kit: type, photographs, the plain pin, the small dial, the check mark.",
+      "**Do** set display in the soft serif in sentence case, send at most one aside per line to the italic, and end display sentences on the crema stop.",
+      "**Do** keep crema to marks: the apron, sleeves, stamps, stops, ticks, lines, badges, the watch face; set words on crema in espresso.",
+      "**Do** draw kit additions with the one pen (2.4px non-scaling stroke, round ends, details cut from solids) and give the barista one pose and one job per section.",
+      "**Do** open photographs out of arches and discs, and circle only the shop's own drinks as stickers with a cream ring.",
+      "**Do** use the minute track as the brand's border where a section or label needs an edge.",
+      "**Do** keep every interactive target at 44px or more, set prices, counts and times in tabular numerals, and gate hover effects behind `(hover: hover) and (pointer: fine)`.",
+      "**Do** keep content in the markup and visible with JS or motion off; figures are drawn in their final poses."
+    ],
+    "donts": [
+      "**Don't** set crema as the colour of running text, links or controls.",
+      "**Don't** set display in capitals, and don't track capitals anywhere but the small label voice.",
+      "**Don't** add a second button family; vary the pill by colour variant and size, and keep its edge tonal, vertical and 2px.",
+      "**Don't** shadow in-page panels, labels or rows; lift only die-cut objects, always with their cream ring.",
+      "**Don't** put time in the barista's body (no clock-hand arms, no dial face); time lives in its watch, cup and walk.",
+      "**Don't** name the barista on the page; it is a proposal for the shop, not an existing mascot.",
+      "**Don't** redraw the shop's logo as a vector; the raster logo tile appears in the nav only until the shop supplies its own vector.",
+      "**Don't** fade content in on its own; every reveal is a shape, a line or a pen."
+    ]
+  }
+}

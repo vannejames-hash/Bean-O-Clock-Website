@@ -1,0 +1,97 @@
+{
+ "note": "Credits for the photographs in this folder: photos.mjs credits prints the footer block for the ones the pages use.",
+ "photos": [
+  {
+   "file": "photo-m28146075.webp",
+   "files": [
+    "photo-m28146075-500.webp",
+    "photo-m28146075-960.webp",
+    "photo-m28146075.webp"
+   ],
+   "id": "m28146075",
+   "alt": "An espresso running into a small glass under the group head",
+   "by": "Sander van der Wel",
+   "licence": "CC BY-SA 2.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "page": "https://commons.wikimedia.org/wiki/File:A_good_cappuccino_starts_with_a_perfect_espresso!!_(4441914182).jpg",
+   "source": "Wikimedia Commons"
+  },
+  {
+   "file": "photo-m201752739.webp",
+   "files": [
+    "photo-m201752739-500.webp",
+    "photo-m201752739-960.webp",
+    "photo-m201752739.webp"
+   ],
+   "id": "m201752739",
+   "alt": "Milk steamed into a red pitcher at the machine, hands only",
+   "by": "Shixart1985",
+   "licence": "CC BY 2.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "page": "https://commons.wikimedia.org/wiki/File:Barista_pours_steamed_milk_into_a_red_pitcher_during_coffee_preparation_in_a_cafe.jpg",
+   "source": "Wikimedia Commons"
+  },
+  {
+   "file": "photo-m187311853-1200.webp",
+   "files": [
+    "photo-m187311853-640.webp",
+    "photo-m187311853-1200.webp"
+   ],
+   "id": "m187311853",
+   "alt": "A barista's hands tamping ground coffee in a portafilter beside an espresso machine",
+   "by": "Shixart1985",
+   "licence": "CC BY 2.0",
+   "licenceUrl": "https://creativecommons.org/licenses/by/2.0",
+   "page": "https://commons.wikimedia.org/wiki/File:Barista_prepares_espresso_at_coffee_shop.jpg",
+   "source": "Wikimedia Commons"
+  },
+  {
+   "file": "photo-m61714648-960.webp",
+   "files": [
+    "photo-m61714648-500.webp",
+    "photo-m61714648-960.webp"
+   ],
+   "id": "m61714648",
+   "alt": "Espresso poured from a small jug into a white cup on a worn wooden bar",
+   "by": "Nathan Dumlao",
+   "licence": "CC0",
+   "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+   "page": "https://commons.wikimedia.org/wiki/File:Nathan_Dumlao_2017-05-27_(Unsplash).jpg",
+   "source": "Wikimedia Commons"
+  },
+  {
+   "file": "photo-m61713028.webp",
+   "files": [
+    "photo-m61713028-500.webp",
+    "photo-m61713028-960.webp",
+    "photo-m61713028.webp"
+   ],
+   "id": "m61713028",
+   "alt": "Espresso running from a bottomless portafilter at a chrome machine",
+   "by": "Blake Richard Verdoorn",
+   "licence": "CC0",
+   "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+   "page": "https://commons.wikimedia.org/wiki/File:Latte_in_a_coffee_machine_(Unsplash).jpg",
+   "source": "Wikimedia Commons"
+  },
+  {
+   "file": "photo-f61713250.webp",
+   "files": [
+    "photo-f61713250-500.webp",
+    "photo-f61713250-960.webp",
+    "photo-f61713250-1280.webp",
+    "photo-f61713250.webp",
+    "photo-f61713250-780x975.webp",
+    "photo-f61713250-disc.webp",
+    "photo-f61713250-disc-440.webp"
+   ],
+   "id": "f61713250",
+   "alt": "Foamy latte art (Unsplash)",
+   "by": "Brigitte Tohm brigittetohm",
+   "licence": "CC0",
+   "licenceUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+   "page": "https://commons.wikimedia.org/wiki/File:Foamy_latte_art_(Unsplash).jpg",
+   "source": "Wikimedia Commons"
+  }
+ ]
+}

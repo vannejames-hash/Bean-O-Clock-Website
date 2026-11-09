@@ -1,0 +1,100 @@
+/* Motion language: seven verbs, used the same way everywhere, and nothing else.
+     reveal     a headline rises into place inside its own line           [data-m="rise"]
+     mask       a photograph opens out of its shape (arch, disc)           [data-m="mask"]
+     draw       a line is drawn by the pen (route, branch, frames)         [data-m="draw"], the crema thread
+     scale      a sticker or stamp is slapped on, with a little overshoot  [data-m="pop"]
+     slide      the sleeve of words travels with the page
+     drift      steam rises, stamps turn: slow, endless, small
+     transform  the barista changes pose: walks, stops, raises a cup, checks the watch (app.js)
+   Content is visible by default; motion only runs with JS and without reduced motion. Elements get .is-in once,
+   when they come into view (app.js). Nothing fades in on its own: every reveal is a shape, a line or a pen.
+
+   The hero, one sequence:
+   0.10  "It's bean" rises in its line; 0.22 "o'clock." follows; the crema stop lands
+   0.30  the coffee rises behind the hill, like the logo's sun, settling from a slight scale
+   0.80  the dial's ticks are drawn on, left to right; EST. and the year set on the ground
+   0.40  the barista walks in from the right across the cup, turns at 1.9 and raises its cup
+   1.30  the sticker is slapped on and starts to turn */
+@media (prefers-reduced-motion: no-preference) {
+  .js .hero[data-enter] .line__in { translate: 0 108%; animation: rise-in 900ms var(--ease-out) 100ms forwards; }
+  .js .hero[data-enter] .line--2 .line__in { animation-delay: 220ms; }
+  .js .hero[data-enter] .hero__sun { translate: 0 34%; animation: sun-up 1300ms var(--ease-drawer) 300ms forwards; }
+  .js .hero[data-enter] .hero__img { scale: 1.18; animation: unscale 1600ms var(--ease-out) 300ms forwards; }
+  .js .hero[data-enter] .hero__ticks line { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw-on 380ms var(--ease-out) forwards; animation-delay: calc(800ms + var(--i) * 32ms); }
+  .js .hero[data-enter] .hero__figure { translate: calc(var(--sun) * 1.9 + var(--gutter)) 0; }
+  .js .hero[data-enter] .hero__stamp { scale: 0; animation: pop-in 640ms var(--ease-pop) 1300ms forwards; }
+  .js .hero[data-enter] .hero__est span { clip-path: inset(0 100% 0 0); animation: wipe 600ms var(--ease-out) 1100ms forwards; }
+  .js .hero[data-enter] .hero__est span + span { animation-delay: 1250ms; }
+
+  /* reveal */
+  .js [data-m='rise'] { overflow: clip; overflow-clip-margin: 0.15em; }
+  .js [data-m='rise'] .rise { display: inline-block; transition: translate 1000ms var(--ease-out); }
+  .js [data-m='rise']:not(.is-in) .rise { translate: 0 115%; }
+  /* mask */
+  .js [data-m='mask'] { transition: clip-path 1200ms var(--ease-drawer); }
+  .js [data-m='mask'] img { transition: scale 1600ms var(--ease-out); }
+  .js [data-m='mask']:not(.is-in) { clip-path: inset(100% 0 0 0 round 50% 50% 0 0); }
+  .js [data-m='mask']:not(.is-in) img { scale: 1.15; }
+  /* draw */
+  .js [data-m='draw'] path { stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 2000ms var(--ease-in-out); }
+  .js [data-m='draw'].is-in path { stroke-dashoffset: 0; }
+  /* The coffee process plays in turn (app.js marks each step .is-on): the tamp presses (puffs on .is-tamp),
+     the arrow is drawn on, the shot runs into the cup, the arrow, the milk runs and a heart blooms. */
+  .js [data-process] [data-stream] { stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 1000ms var(--ease-out) 250ms; }
+  .js [data-process] .is-on [data-stream] { stroke-dashoffset: 0; }
+  .js [data-process] [data-heart] { transform-box: fill-box; transform-origin: center; scale: 0; transition: scale 500ms var(--ease-pop) 1100ms; }
+  .js [data-process] .is-on [data-heart] { scale: 1; }
+  .js [data-process] [data-puff] { opacity: 0; transition: opacity 120ms ease; }
+  .js [data-process] .is-tamp [data-puff] { opacity: 1; }
+  .js [data-process] .process__link { clip-path: inset(-20% 100% -20% 0); transition: clip-path 700ms var(--ease-in-out); }
+  .js [data-process] .process__link.is-on { clip-path: inset(-20% -10% -20% 0); }
+  .js .arch__frame path { stroke-dasharray: 1; stroke-dashoffset: var(--frame-off, 1); }
+  /* scale */
+  .js [data-m='pop'] { transition: scale 620ms var(--ease-pop), rotate 620ms var(--ease-pop); }
+  .js [data-m='pop']:not(.is-in) { scale: 0.4; rotate: -18deg; }
+  .js .drink:nth-child(2) [data-m='pop'] { transition-delay: 120ms; }
+  .js .drink:nth-child(3) [data-m='pop'] { transition-delay: 240ms; }
+  .js .news__stamp[data-m='pop'] { transition-delay: 420ms; }
+
+  /* Visit: the route is dotted out to the pin once the barista has arrived. */
+  .js [data-visit] .visit__dash { transition: clip-path 900ms var(--ease-out); }
+  .js [data-visit]:not(.is-pointing) .visit__dash { clip-path: inset(0 100% 0 0); }
+  .js [data-visit] .visit__pin { transition: scale 500ms var(--ease-pop) 600ms; }
+  .js [data-visit]:not(.is-pointing) .visit__pin { scale: 0; }
+
+  /* The crema thread, drawn as the page scrolls (app.js sets the offset). */
+  .thread path { stroke-dasharray: var(--len) var(--len); stroke-dashoffset: var(--off, var(--len)); }
+}
+@keyframes rise-in { to { translate: 0 0; } }
+@keyframes sun-up { to { translate: 0 0; } }
+@keyframes unscale { to { scale: 1; } }
+@keyframes draw-on { to { stroke-dashoffset: 0; } }
+@keyframes pop-in { to { scale: 1; } }
+@keyframes wipe { to { clip-path: inset(0 0 0 0); } }
+
+/* The thread: one crema line from the hero's cup down to the arch of the usual, laid over the page. */
+.thread { position: absolute; left: 0; top: 0; width: 100%; z-index: 3; pointer-events: none; overflow: visible; }
+.thread path { fill: none; stroke: var(--c-crema); stroke-width: 2.4px; stroke-linecap: round; stroke-linejoin: round; }
+
+/* Tactile feedback: the + that was used turns to a check, and three crema ticks shine out of it. */
+[data-added] :is(.row__add, .best__add, .drink__add) { position: relative; background: var(--c-brand-deep); color: var(--c-on-brand); box-shadow: none; overflow: visible; }
+.news [data-added] .drink__add { background: var(--c-on-brand); color: var(--c-brand-deep); }
+[data-added] :is(.row__add, .best__add, .drink__add) svg { display: none; }
+[data-added] :is(.row__add, .best__add, .drink__add)::after {
+  content: ''; width: 13px; height: 7px; margin-top: -3px;
+  border-left: 2px solid currentColor; border-bottom: 2px solid currentColor;
+  rotate: -45deg; animation: pop 380ms var(--ease-out);
+}
+[data-added] :is(.row__add, .best__add, .drink__add)::before {
+  content: ''; position: absolute; inset: -14px; pointer-events: none;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 72 72'%3E%3Cg stroke='%23CF8A45' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M36 2v9M62 12l-6 7M70 36h-9M10 12l6 7M2 36h9'/%3E%3C/g%3E%3C/svg%3E") center / contain no-repeat;
+  animation: shine-out 600ms var(--ease-out) forwards;
+}
+@keyframes pop { from { scale: 0.4; opacity: 0; } }
+@keyframes shine-out { from { scale: 0.6; opacity: 1; } 70% { opacity: 1; } to { scale: 1.15; opacity: 0; } }
+.stepper output.bump, .cart-line__price.bump { animation: bump 360ms var(--ease-out); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; animation-delay: 0ms !important; transition-duration: 1ms !important; }
+  .stamp__ring, .regular .f-steam path { animation: none !important; }
+}
