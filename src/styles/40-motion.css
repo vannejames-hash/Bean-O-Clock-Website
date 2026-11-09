@@ -11,14 +11,15 @@
 
    The hero, one sequence:
    0.10  "It's bean" rises in its line; 0.22 "o'clock." follows; the crema stop lands
-   0.30  the coffee rises behind the hill, like the logo's sun, settling from a slight scale
+   0.15  the ground arc is drawn; 0.30 the coffee rises behind it, like the logo's sun, settling from a slight scale
    0.80  the dial's ticks are drawn on, left to right; EST. and the year set on the ground
    0.40  the barista walks in from the right across the cup, turns at 1.9 and raises its cup
    1.30  the sticker is slapped on and starts to turn */
 @media (prefers-reduced-motion: no-preference) {
   .js .hero[data-enter] .line__in { translate: 0 108%; animation: rise-in 900ms var(--ease-out) 100ms forwards; }
   .js .hero[data-enter] .line--2 .line__in { animation-delay: 220ms; }
-  .js .hero[data-enter] .hero__sun { translate: 0 34%; animation: sun-up 1300ms var(--ease-drawer) 300ms forwards; }
+  .js .hero[data-enter] .hero__mask { clip-path: circle(0% at 50% 82%); animation: sun-rise 1300ms var(--ease-drawer) 300ms forwards; }
+  .js .hero[data-enter] .hero__ground { clip-path: inset(-200% 100% -200% 0); animation: wipe-x 900ms var(--ease-out) 150ms forwards; }
   .js .hero[data-enter] .hero__img { scale: 1.18; animation: unscale 1600ms var(--ease-out) 300ms forwards; }
   .js .hero[data-enter] .hero__ticks line { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw-on 380ms var(--ease-out) forwards; animation-delay: calc(800ms + var(--i) * 32ms); }
   .js .hero[data-enter] .hero__figure { translate: calc(var(--sun) * 1.9 + var(--gutter)) 0; }
@@ -66,7 +67,8 @@
   .thread path { stroke-dasharray: var(--len) var(--len); stroke-dashoffset: var(--off, var(--len)); }
 }
 @keyframes rise-in { to { translate: 0 0; } }
-@keyframes sun-up { to { translate: 0 0; } }
+@keyframes sun-rise { to { clip-path: circle(75% at 50% 50%); } }
+@keyframes wipe-x { to { clip-path: inset(-200% -2% -200% 0); } }
 @keyframes unscale { to { scale: 1; } }
 @keyframes draw-on { to { stroke-dashoffset: 0; } }
 @keyframes pop-in { to { scale: 1; } }

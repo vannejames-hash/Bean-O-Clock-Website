@@ -49,8 +49,9 @@ export function hero({ business, menu, content, brand }) {
     <div class="hero__stage">
       <figure class="hero__sun">
         ${tickArc()}
-        <div class="hero__mask"><img class="hero__img" src="assets/img/${esc(img.src)}" srcset="${esc(srcset)}" sizes="(max-width: 899px) 70vw, 470px" width="${img.w}" height="${img.h}" alt="${esc(img.alt)}" fetchpriority="high" decoding="async" data-source="stand-in"></div>
+        <div class="hero__mask"><img class="hero__img" src="assets/img/${esc(img.src)}" srcset="${esc(srcset)}" sizes="(max-width: 899px) 56vw, 320px" width="${img.w}" height="${img.h}" alt="${esc(img.alt)}" fetchpriority="high" decoding="async" data-source="stand-in"></div>
       </figure>
+      <svg class="hero__ground" viewBox="-22 70 130 20" preserveAspectRatio="none" aria-hidden="true"><path d="M-22 82 Q43 76 108 82"/></svg>
       ${brand?.stamp && content.stamp ? `<div class="hero__stamp">${brand.stamp({ text: esc(content.stamp), mark: 'hot' })}</div>` : ''}
       ${brand?.regular ? `<div class="hero__figure" data-hero-figure>${brand.regular({ pose: 'cheers', cup: 'hot', smile: true })}</div>` : ''}
       <p class="hero__est" aria-hidden="true"><span>Est.</span><span>${business.established}</span></p>

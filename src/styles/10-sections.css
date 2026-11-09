@@ -37,70 +37,75 @@
 @media (max-width: 399px) { .nav__brand img { width: 38px; height: 38px; } .nav__word { font-size: 13px; letter-spacing: 0.08em; } }
 
 /* ---------------------------------------------------------------------------------------------
-   Hero: the logo rebuilt as a scene. The dial's ticks; the coffee rising behind the logo's ground line like
-   its sun; EST. and the year on the ground; the barista standing on the hill with a cup raised. The ground is
-   the cream of the page below, so the hero ends on a horizon, not an edge.
+   Hero: the logo rebuilt as an emblem, set in the middle of the frame. The dial's ticks frame the top; the
+   coffee rises behind a short ground arc, as the logo's bean rises behind its ground; EST. and the year sit
+   at the arc's ends; the barista stands on the arc against the cup, raising its own; the sticker rides on
+   the dial. Below, the page's cream rises as a hill, so the hero ends on a horizon, not an edge.
+   Stage units are --sun (S): the stage is 1.3S wide; the disc sits 0.22S in and 0.12S down.
    --------------------------------------------------------------------------------------------- */
 .hero {
-  --sun: clamp(250px, 24vw, 350px);
-  --crest: clamp(60px, 5.6vw, 84px);
+  --sun: clamp(240px, 24vw, 340px);
+  --crest: clamp(56px, 5vw, 76px);
   position: relative; z-index: 2; overflow: clip;
   padding-bottom: var(--crest);
 }
 .hero__grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) var(--sun);
-  column-gap: clamp(40px, 7vw, 140px);
-  align-items: end;
+  grid-template-columns: minmax(0, 1fr) calc(var(--sun) * 1.3);
+  column-gap: clamp(40px, 6vw, 112px);
+  align-items: center;
   min-height: clamp(360px, calc(66svh - var(--crest)), 540px);
-  padding-top: clamp(20px, 2.6vw, 40px);
+  padding-block: clamp(20px, 2.6vw, 40px) clamp(4px, 1vw, 16px);
 }
-.hero__copy { align-self: center; padding-bottom: clamp(8px, 2vw, 28px); container-type: inline-size; }
+.hero__copy { container-type: inline-size; }
 .hero__title { font-size: min(var(--t-mega), 18cqi); line-height: 0.92; letter-spacing: -0.03em; }
 .hero__lockup { display: block; }
 .hero__title .line { display: block; overflow: clip; overflow-clip-margin: 0.1em; padding: 0.02em 0 0.1em; margin: -0.02em 0 -0.1em; }
 .hero__title .line__in { display: inline-block; white-space: nowrap; }
 .hero__title .line--2 .line__in { display: inline-flex; align-items: baseline; }
 .hero__title .it { font-weight: 560; }
-.hero__o { height: 0.5em; margin-right: 0.015em; transform: translateY(0.01em); }
 .hero__lede { margin-top: clamp(16px, 1.6vw, 24px); font-size: clamp(17px, 1.25vw, 19px); line-height: 1.5; max-width: 40ch; color: var(--c-on-brand-soft); }
 .hero__actions { margin-top: 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 14px 30px; }
 .hero__facts { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 6px 28px; font-size: 15px; color: var(--c-on-brand-soft); }
 .hero__facts strong { color: var(--c-on-brand); font-weight: 750; }
 
-.hero__stage { position: relative; width: var(--sun); height: calc(var(--sun) * 0.74); }
-.hero__sun { position: absolute; z-index: 0; left: 0; bottom: calc(var(--sun) * -0.34); width: var(--sun); aspect-ratio: 1; margin: 0; }
-.hero__mask { position: absolute; inset: 0; border-radius: 50%; overflow: hidden; background: var(--c-brand-deep); }
+.hero__stage { position: relative; width: calc(var(--sun) * 1.3); height: calc(var(--sun) * 1.02 + 20px); }
+.hero__sun { position: absolute; z-index: 0; left: calc(var(--sun) * 0.22); top: calc(var(--sun) * 0.12); width: var(--sun); aspect-ratio: 1; margin: 0; }
+/* The coffee is cut by the ground arc: everything below the curve is hidden, as the logo's bean is. */
+.hero__mask {
+  position: absolute; inset: 0; border-radius: 50%; overflow: hidden; background: var(--c-brand-deep);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3Cpath d='M-22 82 Q43 76 108 82 V-10 H-22 Z'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat;
+          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3Cpath d='M-22 82 Q43 76 108 82 V-10 H-22 Z'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat;
+}
 .hero__img { width: 100%; height: 100%; object-fit: cover; }
 .hero__ticks { position: absolute; inset: -12%; width: 124%; height: 124%; max-width: none; overflow: visible; stroke: var(--c-on-brand); stroke-width: 4; stroke-linecap: round; }
 .hero__ticks line { opacity: 0.55; }
-/* The ground: an ellipse many screens wide, centred on the cup, so its top edge is the logo's gentle arc. */
+/* The ground arc, drawn in the disc's own units so it meets the cut exactly, running out past both sides. */
+.hero__ground { position: absolute; z-index: 1; left: 0; top: calc(var(--sun) * 0.82); width: calc(var(--sun) * 1.3); height: calc(var(--sun) * 0.2); overflow: visible; }
+.hero__ground path { fill: none; stroke: var(--c-on-brand); stroke-width: 2.4px; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+/* The page's hill: an ellipse many screens wide, its top the hero's soft lower edge. */
 .hero__hill {
   position: absolute; z-index: 1; top: calc(100% - var(--crest));
-  left: calc(50% + var(--hill-x, 0px)); width: 360vw; height: 1200px; translate: -50% 0;
+  left: 50%; width: 360vw; height: 1200px; translate: -50% 0;
   border-radius: 50%; background: var(--c-ground);
 }
-.hero__stamp { position: absolute; z-index: 3; width: calc(var(--sun) * 0.32); right: calc(var(--sun) * -0.12); top: calc(var(--sun) * -0.04); rotate: 10deg; }
-.hero__figure { position: absolute; z-index: 3; width: calc(var(--sun) * 0.52); left: calc(var(--sun) * -0.3); bottom: calc(var(--sun) * -0.035); }
+/* The sticker rides on the dial's upper right, inside the tick ring. */
+.hero__stamp { position: absolute; z-index: 3; width: calc(var(--sun) * 0.3); left: calc(var(--sun) * 0.94); top: calc(var(--sun) * 0.08); rotate: 10deg; }
+/* The barista stands on the arc at the cup's left edge (feet at 0.92S), overlapping the coffee. */
+.hero__figure { position: absolute; z-index: 3; width: calc(var(--sun) * 0.5); left: calc(var(--sun) * -0.01); top: calc(var(--sun) * 0.289); }
 .hero__figure .regular { width: 100%; height: auto; }
-.hero__est { position: absolute; z-index: 3; left: calc(var(--sun) * -0.1); right: calc(var(--sun) * -0.1); bottom: -38px; display: flex; justify-content: space-between; color: var(--c-brand-deep); font-size: 13px; font-weight: 800; letter-spacing: 0.24em; text-transform: uppercase; }
+.hero__est { position: absolute; z-index: 3; left: calc(var(--sun) * 0.02); right: calc(var(--sun) * 0.02); top: calc(var(--sun) * 0.955); display: flex; justify-content: space-between; color: var(--c-on-brand-soft); font-size: 12px; font-weight: 800; letter-spacing: 0.24em; text-transform: uppercase; }
 
-@media (min-width: 900px) {
-  /* The ground's crest sits under the cup: the hill rises toward it from the left. */
-  .hero__hill { --hill-x: calc((min(var(--wrap), 100vw - 2 * var(--gutter)) - var(--sun)) / 2); }
-}
 @media (max-width: 899px) {
-  .hero { --sun: min(52vw, 240px); --crest: 52px; }
-  .hero__grid { grid-template-columns: minmax(0, 1fr); min-height: 0; padding-top: 16px; row-gap: 18px; }
-  .hero__copy { padding-bottom: 0; }
+  .hero { --sun: min(50vw, 230px); --crest: 48px; }
+  .hero__grid { grid-template-columns: minmax(0, 1fr); min-height: 0; padding-top: 16px; row-gap: 20px; }
   .hero__title { font-size: min(21cqi, 104px); }
   .hero__lede { margin-top: 16px; }
-  .hero__actions { margin-top: 22px; }
-  .hero__actions { gap: 12px 22px; }
+  .hero__actions { margin-top: 22px; gap: 12px 22px; }
   .hero__actions .btn { flex: 1 1 auto; }
   .hero__facts { margin-top: 16px; gap: 4px 18px; font-size: 14px; }
-  .hero__stage { justify-self: center; translate: 8% 0; }
-  .hero__est { bottom: -30px; font-size: 11px; }
+  .hero__stage { justify-self: center; }
+  .hero__est { font-size: 11px; }
 }
 
 /* The cup sleeve: the menu's facts in the italic between two minute tracks, sliding with the page. */
