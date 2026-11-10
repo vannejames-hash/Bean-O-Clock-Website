@@ -1,8 +1,7 @@
-import { esc, money, lowestPrice } from '../lib/html.js';
+import { esc, money, lowestPrice, sourceOf } from '../lib/html.js';
 import { icons } from '../lib/icons.js';
 
-// The logo, rebuilt as a scene: the dial's ticks, the coffee rising like the logo's sun over its ground line,
-// EST. and the year on the ground, and the brand's barista walking up the hill to raise a cup.
+// The kit-less dial: an arc of ticks over the photograph.
 function tickArc() {
   const c = 500, r1 = 466, r2 = 494;
   let t = '';
@@ -26,10 +25,17 @@ export function hero({ business, menu, content, brand }) {
   // "It's bean": the noun in the italic, the brand's aside.
   const first = esc(l1).replace(/bean$/i, '<span class="it">bean</span>');
   const second = `<span>${esc(l2)}</span>`;
-  const srcset = img.srcset.split(',').map((s) => `assets/img/${s.trim()}`).join(', ');
+  // With a kit, the right side is the brand's own world: the barista pushing the clock to bean o'clock over a
+  // faint paper of beans, clocks and cups. Without one, the photograph rises in the dial as the logo's sun.
+  const stage = brand?.heroScene
+    ? `<div class="hero__stage hero__stage--scene">
+      ${brand.pattern ? `<div class="hero__pattern" aria-hidden="true">${brand.pattern({ id: 'hp' })}</div>` : ''}
+      <div class="hero__scene" data-hero-figure>${brand.heroScene({ est: business.established })}</div>
+    </div>`
+    : photoStage({ business, content, brand, img });
 
   return `
-<section class="hero ground-brand" id="top" aria-labelledby="hero-title" data-enter>
+<section class="hero ground-brand${brand?.heroScene ? ' hero--scene' : ''}" id="top" aria-labelledby="hero-title" data-enter>
   <div class="wrap hero__grid">
     <div class="hero__copy">
       <h1 class="hero__title" id="hero-title">
@@ -46,19 +52,27 @@ export function hero({ business, menu, content, brand }) {
       </div>
       <ul class="hero__facts" role="list">${facts}</ul>
     </div>
+    ${stage}
+  </div>
+  <div class="hero__hill" aria-hidden="true"></div>
+</section>`;
+}
+
+// The kit-less hero: the photograph rises in the dial behind its ground arc, the logo's sun.
+function photoStage({ business, content, brand, img }) {
+  if (!img) return '';
+  const srcset = img.srcset ? img.srcset.split(',').map((s) => `assets/img/${s.trim()}`).join(', ') : '';
+  return `
     <div class="hero__stage">
       <figure class="hero__sun">
         ${tickArc()}
-        <div class="hero__mask"><img class="hero__img" src="assets/img/${esc(img.src)}" srcset="${esc(srcset)}" sizes="(max-width: 899px) 56vw, 320px" width="${img.w}" height="${img.h}" alt="${esc(img.alt)}" fetchpriority="high" decoding="async" data-source="stand-in"></div>
+        <div class="hero__mask"><img class="hero__img" src="assets/img/${esc(img.src)}"${srcset ? ` srcset="${esc(srcset)}" sizes="(max-width: 899px) min(50vw, 230px), clamp(240px, 24vw, 340px)"` : ''} width="${img.w}" height="${img.h}" alt="${esc(img.alt)}" fetchpriority="high" decoding="async" data-source="${sourceOf(img)}"></div>
       </figure>
       <svg class="hero__ground" viewBox="-22 70 130 20" preserveAspectRatio="none" aria-hidden="true"><path d="M-22 82 Q43 76 108 82"/></svg>
       ${brand?.stamp && content.stamp ? `<div class="hero__stamp">${brand.stamp({ text: esc(content.stamp), mark: 'hot' })}</div>` : ''}
       ${brand?.regular ? `<div class="hero__figure" data-hero-figure>${brand.regular({ pose: 'cheers', cup: 'hot', smile: true })}</div>` : ''}
       <p class="hero__est" aria-hidden="true"><span>Est.</span><span>${business.established}</span></p>
-    </div>
-  </div>
-  <div class="hero__hill" aria-hidden="true"></div>
-</section>`;
+    </div>`;
 }
 
 // The cup sleeve: the menu's facts in the italic, each with its cup, between two minute tracks.

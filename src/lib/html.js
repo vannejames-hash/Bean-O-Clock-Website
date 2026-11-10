@@ -16,7 +16,12 @@ export function picture(img, { sizes = '100vw', eager = false, cls = '', fetchpr
   const srcset = img.srcset
     ? img.srcset.split(',').map((s) => base + s.trim()).join(', ')
     : null;
-  return `<img class="${esc(cls)}" src="${base}${esc(img.src)}"${srcset ? ` srcset="${esc(srcset)}" sizes="${esc(sizes)}"` : ''} width="${img.w}" height="${img.h}" alt="${esc(img.alt)}"${eager ? '' : ' loading="lazy"'} decoding="async"${fetchpriority ? ` fetchpriority="${fetchpriority}"` : ''}${img.pos ? ` style="object-position:${esc(img.pos)}"` : ''}${img.standIn ? ' data-source="stand-in"' : ' data-source="client"'}>`;
+  return `<img class="${esc(cls)}" src="${base}${esc(img.src)}"${srcset ? ` srcset="${esc(srcset)}" sizes="${esc(sizes)}"` : ''} width="${img.w}" height="${img.h}" alt="${esc(img.alt)}"${eager ? '' : ' loading="lazy"'} decoding="async"${fetchpriority ? ` fetchpriority="${fetchpriority}"` : ''}${img.pos ? ` style="object-position:${esc(img.pos)}"` : ''} data-source="${sourceOf(img)}">`;
+}
+
+// Where a picture comes from: the shop's own, a licensed library photograph, or a generated stand-in.
+export function sourceOf(img) {
+  return img.generated ? 'generated' : img.standIn ? 'stand-in' : img.enhanced ? 'client-enhanced' : 'client';
 }
 
 export function findItem(menu, id) {

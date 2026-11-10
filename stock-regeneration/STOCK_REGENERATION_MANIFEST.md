@@ -267,3 +267,18 @@ realistic, tactile, palette of steel, cream, espresso brown and soft black. No t
 The shop's own drink photographs (the three "New on the board" stickers) are low resolution, but they are
 real products and are **not** in this pack. A phone shoot of those three drinks would improve the page more
 than any generated image.
+
+---
+
+## D. Outcome (V6, 2026-11-10)
+
+The regenerated set came back as `compiled-photos/Enhanced Photos/` (six PNGs, 1024×1536 or 1536×1024).
+
+- **01, 02, 03 are live**: the hero disc (`photo-g01-disc*.webp`), the usual's arch (`photo-g02-*.webp`) and,
+  new in V6, the Espresso-based plate on the menu board (`photo-g03-*.webp`). Credited on credits.html as
+  generated for the demo, not the shop.
+- **04, 05 are reserves** in the client folder (`photo-g04-*`, `photo-g05-*`); no slot uses them.
+- **06 was not used.** The result does not follow its prompt ("no jewellery... no logos, no branding"): the hand
+  wears a diamond watch with a legible third-party crown and wordmark, and the pitcher is red. A third-party
+  brand in the shop's marketing reads as an endorsement. Regenerate it from the prompt above, adding "a plain
+  steel watch with a blank dial" if a watch is wanted for the "Pick a time" band.

@@ -46,7 +46,8 @@ export function coffee({ menu, content, brand }) {
 </section>`;
 }
 
-// The order band: the barista checks the watch, and the watch's face, blown up, tells the time in Tagum.
+// The order band: the barista checks the watch, a pickup bag in the other hand ("right on time"), and the
+// watch's face, blown up, tells the time in Tagum.
 function watchFace() {
   let ticks = '';
   for (let i = 0; i < 60; i++) {
@@ -76,13 +77,13 @@ export function close({ content, brand }) {
         ${watchFace()}
         <p class="watch__time"><strong data-clock-time>&nbsp;</strong><span>${esc(c.clockLabel)}</span></p>
       </div>
-      ${brand?.regular ? `<div class="order__figure" data-clock-figure>${brand.regular({ pose: 'watch', cup: 'hot', hold: 'back' })}</div>` : ''}
+      ${brand?.regular ? `<div class="order__figure" data-clock-figure>${brand.regular({ pose: 'watch', cup: 'bag', hold: 'back' })}</div>` : ''}
     </figure>
   </div>
 </section>`;
 }
 
-// Visit: the barista walks in along a dotted route and points to the map pin.
+// Visit: the barista rides in on a small scooter, helmet on, and the road runs out from it to the map pin.
 export function visit({ business, content, brand }) {
   const c = content.visit;
   const loc = business.location;
@@ -93,7 +94,7 @@ export function visit({ business, content, brand }) {
     <div class="visit__head" data-visit>
       <h2 class="h2 visit__title" id="visit-title">${stop(c.title)}</h2>
       <div class="visit__route" aria-hidden="true">
-        ${brand?.regular ? `<div class="visit__figure on-light" data-visit-figure>${brand.regular({ pose: 'point', cup: 'hot', hold: 'back' })}</div>` : ''}
+        ${brand?.moto ? `<div class="visit__moto on-light" data-visit-figure>${brand.moto()}</div>` : ''}
         <span class="visit__dash"></span>
         <span class="visit__pin">${brand?.icon ? brand.icon('pin', 'on-light') : icons.pin(28)}</span>
       </div>

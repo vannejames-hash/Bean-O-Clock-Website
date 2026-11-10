@@ -23,7 +23,20 @@ const ICON = {
    tweened between poses, walked, and given small idle loops. Everything lands on its final pose even
    when animation frames stall (a background tab), and nothing moves under reduced motion. */
 const POSES = (() => { try { return JSON.parse($('#figure-poses')?.textContent || '{}'); } catch { return {}; } })();
-const JOINTS = ['sF', 'eF', 'sB', 'eB', 'hF', 'kF', 'hB', 'kB', 'hd', 'y', 'cup', 'bob'];
+const RIG = (() => { try { return JSON.parse($('#figure-rig')?.textContent || 'null'); } catch { return null; } })();
+const JOINTS = ['sF', 'eF', 'sB', 'eB', 'hF', 'kF', 'hB', 'kB', 'hd', 'sp', 'y', 'cup', 'bob'];
+// Where a hand is for a pose, in the figure's units: the same sums as the kit's handAt, so a lever stays in it.
+function handAt(p, side) {
+  if (!RIG) return null;
+  const r = Math.PI / 180;
+  const [sx, sy] = side === 'F' ? RIG.shoulderF : RIG.shoulderB;
+  const s = (p[`s${side}`] || 0) * r, e = ((p[`s${side}`] || 0) + (p[`e${side}`] || 0)) * r;
+  const ex = sx - RIG.upperArm * Math.sin(s), ey = sy + RIG.upperArm * Math.cos(s);
+  const hx = ex - RIG.foreArm * Math.sin(e), hy = ey + RIG.foreArm * Math.cos(e);
+  const [cx, cy] = RIG.waist;
+  const a = (p.sp || 0) * r, c = Math.cos(a), sn = Math.sin(a);
+  return [cx + (hx - cx) * c - (hy - cy) * sn, cy + (hx - cx) * sn + (hy - cy) * c + (p.y || 0) + (p.bob || 0)];
+}
 const easeInOut = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 const poseOf = (name) => ({ bob: 0, cup: 0, y: 0, ...POSES.stand, ...(typeof name === 'string' ? POSES[name] : name) });
 function applyPose(svg, p) {
@@ -35,12 +48,24 @@ function applyPose(svg, p) {
   }
   for (const h of svg.querySelectorAll('[data-hold]')) {
     const s = h.dataset.hold === 'front' ? 'F' : 'B';
-    h.setAttribute('transform', `rotate(${(-(p[`s${s}`] + p[`e${s}`]) + (p.cup || 0)).toFixed(2)})`);
+    h.setAttribute('transform', `rotate(${(-(p.sp || 0) - p[`s${s}`] - p[`e${s}`] + (p.cup || 0)).toFixed(2)})`);
+  }
+  // A part of the set the hand holds (the machine's lever) runs from its fixed end to the hand.
+  for (const l of svg.querySelectorAll('[data-follow]')) {
+    const at = handAt(p, l.dataset.follow);
+    if (at) l.setAttribute('d', `M${l.dataset.from} L${at[0].toFixed(2)} ${at[1].toFixed(2)}`);
+  }
+  // A part that turns about a fixed point to point at the hand (the hero clock's minute hand).
+  for (const g of svg.querySelectorAll('[data-aim]')) {
+    const at = handAt(p, g.dataset.aim);
+    if (!at) continue;
+    const [cx, cy] = g.dataset.from.split(' ').map(Number);
+    g.setAttribute('transform', `rotate(${((Math.atan2(at[0] - cx, -(at[1] - cy)) * 180) / Math.PI).toFixed(2)} ${cx} ${cy})`);
   }
 }
 function stopMotion(svg) { cancelAnimationFrame(svg._raf); clearTimeout(svg._settle); svg._loop = null; }
 // Tween to a pose. Resolves when it lands.
-function pose(svg, name, { dur = 700 } = {}) {
+function pose(svg, name, { dur = 700, ease = easeInOut } = {}) {
   if (!svg) return Promise.resolve();
   stopMotion(svg);
   const to = poseOf(name);
@@ -51,7 +76,7 @@ function pose(svg, name, { dur = 700 } = {}) {
     const land = () => { stopMotion(svg); applyPose(svg, to); done(); };
     const step = (now) => {
       const t = Math.min(1, (now - t0) / dur);
-      const e = easeInOut(t);
+      const e = ease(t);
       const p = {};
       for (const k of JOINTS) p[k] = (from[k] || 0) + ((to[k] || 0) - (from[k] || 0)) * e;
       applyPose(svg, p);
@@ -88,6 +113,102 @@ const walkCycle = (ph) => {
   };
 };
 function walk(svg) { loop(svg, 'carry', walkCycle, 860); }
+
+/* ---------- The acts' shared language ----------
+   Every click act is beats on the same curves and times: a wind-up on the in-out curve (~240ms), the action
+   itself quick (110-160ms: a strike accelerates into contact, a gesture lands with a small overshoot), a short
+   hold, and the way back on the in-out curve (~400ms). */
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const deg = (r) => (r * 180) / Math.PI;
+const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+const easeOut = (t) => 1 - Math.pow(1 - t, 3);
+const easeIn = (t) => t * t * t;
+const easeBack = (t) => 1 + 2.2 * Math.pow(t - 1, 3) + 1.2 * Math.pow(t - 1, 2);
+const mixPose = (a, b, t) => { const p = {}; for (const k of JOINTS) p[k] = (a[k] || 0) + ((b[k] || 0) - (a[k] || 0)) * t; return p; };
+// Play an act: each beat is a pose and its time ({ to, dur, ease }), a pause (ms), or a call.
+async function beats(svg, list) {
+  for (const b of list) {
+    if (typeof b === 'number') await wait(b);
+    else if (typeof b === 'function') b();
+    else await pose(svg, b.to, { dur: b.dur, ease: b.ease || easeInOut });
+  }
+}
+// Reaching, in the browser: the kit's two-bone solve, so an arm can follow a hand that is not in a pose.
+function reachTo(tx, ty, { side = 'F', sp = 0, y = 0, bend = 1 } = {}) {
+  const [cx, cy] = RIG.waist;
+  const c = Math.cos(rad(-sp)), s = Math.sin(rad(-sp));
+  const dx0 = tx - cx, dy0 = ty - y - cy;
+  const lx = cx + dx0 * c - dy0 * s, ly = cy + dx0 * s + dy0 * c;
+  const [sx, sy] = side === 'F' ? RIG.shoulderF : RIG.shoulderB;
+  const L1 = RIG.upperArm, L2 = RIG.foreArm;
+  const dx = lx - sx, dy = ly - sy;
+  const d = clamp(Math.hypot(dx, dy), 1, L1 + L2 - 0.01);
+  const t = deg(Math.atan2(-dx, dy));
+  const a = deg(Math.acos(clamp((L1 * L1 + d * d - L2 * L2) / (2 * L1 * d), -1, 1)));
+  const b = deg(Math.acos(clamp((L1 * L1 + L2 * L2 - d * d) / (2 * L1 * L2), -1, 1)));
+  return { [`s${side}`]: t - bend * a, [`e${side}`]: bend * (180 - b) };
+}
+
+/* ---------- Mascots: every barista answers a click, a tap or Enter with an act of its own ----------
+   One instance per figure: its act, when it is ready, a cooldown, and a reset. While an act plays, one more
+   press is queued at most; the rest are dropped, so acts never stack. Without motion the figure answers with a
+   short fade instead (the act's meaning is in its label). */
+// A press: the mouse acts on the way down; a finger only on a tap (a scroll that starts on it is a scroll).
+function onPress(el, fire) {
+  let down = null;
+  el.addEventListener('pointerdown', (e) => {
+    if (e.pointerType === 'touch') { down = { x: e.clientX, y: e.clientY, t: e.timeStamp, id: e.pointerId }; return; }
+    if (e.button !== 0) return;
+    e.preventDefault();
+    fire(e);
+  });
+  el.addEventListener('pointerup', (e) => {
+    if (!down || e.pointerId !== down.id) return;
+    const tap = Math.hypot(e.clientX - down.x, e.clientY - down.y) < 12 && e.timeStamp - down.t < 650;
+    down = null;
+    if (tap) fire(e);
+  });
+  el.addEventListener('pointercancel', () => { down = null; });
+  el.addEventListener('contextmenu', (e) => { if (e.pointerType === 'touch' || down) e.preventDefault(); });
+  el.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    e.preventDefault();
+    if (!e.repeat) fire(e);
+  });
+}
+function fade(el) {
+  if (!el) return;
+  el.classList.remove('is-poked');
+  void el.getBoundingClientRect();
+  el.classList.add('is-poked');
+  clearTimeout(el._poked);
+  el._poked = setTimeout(() => el.classList.remove('is-poked'), 320);
+}
+function mascot(el, { label, act, ready = () => true, cooldown = 220, limit = 3200, reset, scene = false, faded = el } = {}) {
+  if (!el || !act) return null;
+  const m = { el, busy: false, queued: false };
+  el.classList.add(el instanceof SVGElement ? 'mascot-hit' : 'mascot');
+  if (scene) el.classList.add('mascot--scene');
+  el.setAttribute('role', 'button');
+  el.setAttribute('tabindex', '0');
+  el.setAttribute('aria-label', label);
+  el.removeAttribute('aria-hidden');
+  m.run = async () => {
+    if (!ready()) return;
+    if (m.busy) { m.queued = true; return; }
+    m.busy = true;
+    el.classList.add('is-acting');
+    if (reduceMotion) { fade(faded); await wait(300); }
+    else await Promise.race([act(m), wait(limit)]);
+    reset?.();
+    el.classList.remove('is-acting');
+    await wait(cooldown);
+    m.busy = false;
+    if (m.queued) { m.queued = false; m.run(); }
+  };
+  onPress(el, m.run);
+  return m;
+}
 // Init: every figure starts on the pose it was drawn in.
 $$('[data-figure]').forEach((svg) => applyPose(svg, poseOf(svg.dataset.pose)));
 
@@ -199,7 +320,7 @@ function openItem(id) {
       <button class="icon-btn" type="button" data-close>${ICON.close}<span class="sr-only">Close</span></button>
     </header>
     <div class="sheet__body">
-      ${img ? `<div class="item__photo ${img.round ? 'item__photo--round' : ''}"><img src="assets/img/${esc(img.src)}" alt="${esc(img.alt)}" width="${img.w}" height="${img.h}" style="object-position:${esc(img.pos || '50% 50%')}"></div>` : ''}
+      ${img ? `<div class="item__photo ${img.round ? 'item__photo--round' : ''}"><img src="assets/img/${esc(img.src)}"${img.srcset ? ` srcset="${esc(img.srcset.split(',').map((s) => `assets/img/${s.trim()}`).join(', '))}" sizes="${img.round ? '200px' : '500px'}"` : ''} alt="${esc(img.alt)}" width="${img.w}" height="${img.h}" style="object-position:${esc(img.pos || '50% 50%')}"></div>` : ''}
       <p class="item__price">${money(it.price)}</p>
       ${temps.length ? `
       <fieldset class="field-set">
@@ -258,6 +379,7 @@ itemForm.addEventListener('submit', (e) => {
   addLine(line);
   closeSheet(itemSheet);
   flashAdded(lastTrigger);
+  cheer(lastTrigger);
   toast(`${line.qty > 1 ? `${line.qty} × ` : ''}${displayName(ITEMS.get(line.id))} added`);
   if (orderSheet.open) renderOrder();
 });
@@ -271,6 +393,14 @@ function flashAdded(el) {
   el.setAttribute('data-added', '');
   clearTimeout(el._addedTimer);
   el._addedTimer = setTimeout(() => el.removeAttribute('data-added'), 1600);
+}
+
+// A drink added from the board: that list's barista gives a small hop of approval and settles back.
+function cheer(from) {
+  const fig = from?.closest('.board__panel') && $('.face__figure [data-figure]', from.closest('.board__panel'));
+  if (!fig || reduceMotion) return;
+  const base = poseOf(fig.dataset.pose);
+  pose(fig, { ...base, y: (base.y || 0) - 9, hd: (base.hd || 0) - 10 }, { dur: 170 }).then(() => pose(fig, fig.dataset.pose, { dur: 340 }));
 }
 
 /* ---------- Toast ---------- */
@@ -655,38 +785,138 @@ if (closeActions) {
   new IntersectionObserver(([en]) => { closeVisible = en.isIntersecting; updateActionBar(); }).observe(closeActions);
 }
 
-const links = new Map($$('[data-cat-link]').map((a) => [a.dataset.catLink, a]));
-const cats = $$('[data-cat]');
-const indexList = $('.menu__index ul');
-const ink = $('.menu__ink');
-let activeCat = null;
-function placeInk() {
-  const a = links.get(activeCat);
-  if (!ink || !a) return;
-  ink.style.setProperty('--ink-x', `${a.offsetLeft}px`);
-  ink.style.setProperty('--ink-w', a.offsetWidth);
-  ink.style.setProperty('--ink-on', 1);
+/* ---------- The whole board: one list at a time ----------
+   The tags are a tablist. Picking one swaps the list on the board (CSS plays the swap from .is-entering to
+   .is-active, sliding from the side of travel, --dir), slides the crema track under the tag, and turns the
+   new list's barista to its pose. Links to #cat-<list> anywhere on the page pick that list and bring the board
+   into view. */
+const board = $('[data-board]');
+const boardTabs = board ? $$('[role="tab"]', board) : [];
+const boardPanels = new Map(board ? $$('[role="tabpanel"]', board).map((p) => [p.dataset.panel, p]) : []);
+const boardOrder = boardTabs.map((t) => t.dataset.tab);
+const boardBar = board && $('.board__bar', board);
+const boardHand = board && $('.board__hand', board);
+const boardStage = board && $('.board__stage', board);
+let boardList = boardTabs.find((t) => t.getAttribute('aria-selected') === 'true')?.dataset.tab || boardOrder[0];
+const narrow = () => matchMedia('(max-width: 899px)').matches;
+function placeHand() {
+  const t = boardTabs.find((x) => x.dataset.tab === boardList);
+  if (!boardHand || !t) return;
+  boardHand.style.setProperty('--hand-x', `${t.offsetLeft + 10}px`);
+  boardHand.style.setProperty('--hand-w', Math.max(0, t.offsetWidth - 20));
+  boardHand.style.setProperty('--hand-on', 1);
 }
-function updateIndex() {
-  if (!cats.length) return;
-  const line = (nav?.offsetHeight || 64) + (indexList?.offsetHeight || 52) + 80;
-  let id = cats[0].dataset.cat;
-  for (const s of cats) if (s.getBoundingClientRect().top <= line) id = s.dataset.cat;
-  if (id === activeCat) return;
-  activeCat = id;
-  links.forEach((a, k) => a.setAttribute('aria-current', String(k === id)));
-  placeInk();
-  const a = links.get(id);
-  if (a && indexList) {
-    const li = a.parentElement;
-    const left = li.offsetLeft - 24;
-    const right = li.offsetLeft + li.offsetWidth + 24 - indexList.clientWidth;
-    if (indexList.scrollLeft > left) indexList.scrollTo({ left, behavior: reduceMotion ? 'auto' : 'smooth' });
-    else if (indexList.scrollLeft < right) indexList.scrollTo({ left: right, behavior: reduceMotion ? 'auto' : 'smooth' });
+// The barista on a list's plate turns from standing to the pose it is drawn in.
+function greet(panel, delay = 60) {
+  const fig = panel && $('.face__figure [data-figure]', panel);
+  if (!fig || reduceMotion) return;
+  applyPose(fig, poseOf('stand'));
+  setTimeout(() => pose(fig, fig.dataset.pose, { dur: 460 }), delay);
+}
+function showList(id, { focus = false, reveal = false } = {}) {
+  const next = boardPanels.get(id);
+  const prev = boardPanels.get(boardList);
+  if (!next) return;
+  if (next !== prev) {
+    boardStage.style.setProperty('--dir', boardOrder.indexOf(id) > boardOrder.indexOf(boardList) ? 1 : -1);
+    boardList = id;
+    boardTabs.forEach((t) => {
+      const on = t.dataset.tab === id;
+      t.setAttribute('aria-selected', String(on));
+      t.tabIndex = on ? 0 : -1;
+    });
+    prev.classList.remove('is-active', 'is-entering');
+    prev.inert = true;
+    next.inert = false;
+    next.classList.add('is-active', 'is-entering');
+    void next.offsetWidth;
+    next.classList.remove('is-entering');
+    greet(next);
+    placeHand();
+    const t = boardTabs.find((x) => x.dataset.tab === id);
+    if (t && boardBar.scrollWidth > boardBar.clientWidth) {
+      const left = t.offsetLeft - 24;
+      const right = t.offsetLeft + t.offsetWidth + 24 - boardBar.clientWidth;
+      if (boardBar.scrollLeft > left) boardBar.scrollTo({ left, behavior: reduceMotion ? 'auto' : 'smooth' });
+      else if (boardBar.scrollLeft < right) boardBar.scrollTo({ left: right, behavior: reduceMotion ? 'auto' : 'smooth' });
+    }
+    // On a phone the lists differ in length: if the reader was deep in a long one, bring the new one's top up.
+    if (narrow() && !reveal) {
+      const top = boardStage.getBoundingClientRect().top;
+      const under = (nav?.offsetHeight || 64) + boardBar.offsetHeight;
+      if (top < under) scrollTo({ top: scrollY + top - under - 8, behavior: reduceMotion ? 'auto' : 'smooth' });
+    }
   }
+  if (focus) boardTabs.find((x) => x.dataset.tab === id)?.focus();
+  if (reveal) (narrow() ? board : boardBar).scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
 }
-addEventListener('resize', placeInk);
-document.fonts?.ready.then(placeInk);
+if (board) {
+  boardPanels.forEach((p, id) => { p.inert = id !== boardList; });
+  board.addEventListener('click', (e) => {
+    const t = e.target.closest('[role="tab"]');
+    if (t) showList(t.dataset.tab);
+  });
+  $('[role="tablist"]', board).addEventListener('keydown', (e) => {
+    const i = boardOrder.indexOf(boardList);
+    const j = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: boardOrder.length - 1 }[e.key];
+    if (j === undefined) return;
+    e.preventDefault();
+    showList(boardOrder[(j + boardOrder.length) % boardOrder.length], { focus: true });
+  });
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest('a[href^="#cat-"]');
+    const id = a?.getAttribute('href').slice(5);
+    if (!id || !boardPanels.has(id)) return;
+    e.preventDefault();
+    showList(id, { reveal: true });
+  });
+  const fromHash = () => {
+    const id = location.hash.startsWith('#cat-') && location.hash.slice(5);
+    if (id && boardPanels.has(id)) showList(id, { reveal: true });
+  };
+  fromHash();
+  addEventListener('hashchange', fromHash);
+  // The first time the board comes into view, its barista turns to its pose.
+  if (!reduceMotion && 'IntersectionObserver' in window) {
+    new IntersectionObserver(([en], io) => {
+      if (en.isIntersecting) { io.disconnect(); greet(boardPanels.get(boardList), 200); }
+    }, { threshold: 0.35 }).observe(boardStage);
+  }
+  addEventListener('resize', placeHand);
+  document.fonts?.ready.then(placeHand);
+  placeHand();
+  // Each list's barista answers a tap by holding its drink out toward the list, a little bow and a nod: short,
+  // it serves the board. The add-ons barista reaches over to its tray, lifts the syrup bottle up beside its head,
+  // gives it a proud little shake and puts it back.
+  boardPanels.forEach((panel) => {
+    const box = $('.face__figure', panel), f = box && $('[data-figure]', box);
+    if (!f) return;
+    const tray = f.dataset.pose === 'tray';
+    mascot(box, {
+      label: tray ? 'Barista: show off an extra' : 'Barista: offer this drink',
+      act: () => {
+        if (!tray) {
+          const o = poseOf('offer');
+          return beats(f, [{ to: o, dur: 220 }, { to: { ...o, hd: o.hd + 10, sp: o.sp + 3 }, dur: 140, ease: easeBack }, { to: o, dur: 150 }, 160, { to: f.dataset.pose, dur: 380 }]);
+        }
+        const show = poseOf('trayShow');
+        return beats(f, [
+          { to: 'trayReach', dur: 260 },
+          () => box.classList.add('is-picked'),
+          { to: show, dur: 280, ease: easeBack },
+          { to: { ...show, eB: show.eB - 12, hd: show.hd - 6 }, dur: 120 },
+          { to: { ...show, eB: show.eB + 8 }, dur: 120 },
+          { to: show, dur: 100 },
+          80,
+          { to: 'trayReach', dur: 260 },
+          () => box.classList.remove('is-picked'),
+          { to: 'tray', dur: 240 },
+        ]);
+      },
+      reset: () => box.classList.remove('is-picked'),
+    });
+  });
+}
 
 /* ---------- Clocks: every clock on the page tells the time in Tagum (Asia/Manila) ---------- */
 function tagumNow() {
@@ -733,7 +963,245 @@ function heroLanded() {
   heroFigure?.classList.remove('is-mirror');
   requestAnimationFrame(layoutThread);
 }
-if (enterHero && heroFigure && !reduceMotion) {
+// The Timekeeper (a kit's hero scene): the barista pushes the clock's minute hand up from a quarter to, then
+// keeps hold of it, breathing, the push easing and pressing again on a 4s loop (the hand moves with it). From
+// then on the clock is the visitor's to play with (timekeeper(), below). It runs only while the hero is on screen.
+const heroScene = heroFigure && heroFigure.classList.contains('hero-scene');
+
+/* The clock's two hands have weight. A press gives a hand a push; the push becomes angular velocity over a short
+   spin-up; friction draws the velocity back to the clock's own slow creep; the angle integrates in fixed 1/120s
+   steps from a clamped frame time, so it feels the same at any frame rate and never jumps, however hard it is
+   pressed. The minute hand is light (quick spin-up, short coast: easy at two presses a second); the hour hand is
+   about four times heavier (a fifth of the kick, four times the coast: one press every two seconds). Speeds are
+   capped twice: a push only fills the room left under the cap, and the velocity is clamped.
+   The barista holds the minute hand until it is pushed away, follows it round with its eyes, and catches it when
+   it comes by slowly within reach, then sets it back. Tapped while it holds the hand, the barista shoves it once
+   round the dial (and catches it as it comes back); tapped while it waits, it shrugs. */
+const HANDS = {
+  m: { kick: 120, tau: 0.7, rise: 0.05, max: 480, creep: 1.2 },
+  h: { kick: 20, tau: 2.7, rise: 0.22, max: 150, creep: 0.1 },
+};
+const STEP = 1 / 120;
+function timekeeper(svg) {
+  const groups = { m: $$('[data-clock-hand="m"]', svg), h: $$('[data-clock-hand="h"]', svg) };
+  if (!groups.m.length || !groups.h.length || !RIG) return null;
+  const [cx, cy] = groups.m[0].dataset.from.split(' ').map(Number);
+  const noon = $('.hero__noon-in', svg);
+  const at = (a, r) => [cx + r * Math.sin(rad(a)), cy - r * Math.cos(rad(a))];
+  const aim = (p) => { const [x, y] = handAt(p, 'F'); return deg(Math.atan2(x - cx, -(y - cy))); };
+  const wrap = (a) => ((((a + 180) % 360) + 360) % 360) - 180;
+  const angleOf = (g) => Number((g.getAttribute('transform').match(/rotate\(([-\d.]+)/) || [])[1]) || 0;
+  const PUSH = poseOf('push'), WAITP = poseOf('letGo'), SHRUG = poseOf('letGoShrug'), GLANCE = poseOf('watchCheck');
+  const HOME = aim(PUSH);
+  const R = Math.hypot(handAt(PUSH, 'F')[0] - cx, handAt(PUSH, 'F')[1] - cy);
+  const REACH = [-80, -50]; // where the barista can catch the minute hand coming up from nine
+  const H = { m: { a: HOME, w: 0, q: 0, ...HANDS.m }, h: { a: angleOf(groups.h[0]), w: 0, q: 0, ...HANDS.h } };
+  // The look: from the neck (turned with the lean) to a point near the minute hand's tip.
+  const neck = RIG.neck || [2, -168];
+  const gaze = (p) => {
+    const [wx, wy] = RIG.waist, c = Math.cos(rad(p.sp || 0)), s = Math.sin(rad(p.sp || 0));
+    const nx = wx + (neck[0] - wx) * c - (neck[1] - wy) * s, ny = wy + (neck[0] - wx) * s + (neck[1] - wy) * c + (p.y || 0) + (p.bob || 0);
+    const [tx, ty] = at(H.m.a, 108);
+    return clamp(deg(Math.atan2(ty - ny, Math.max(tx - nx, 10))) * 0.8 - (p.sp || 0), -36, 24);
+  };
+
+  let mode = 'held';
+  let now = 0, last = 0, acc = 0, raf = 0;
+  let shown = { ...(svg._pose || PUSH) };
+  let from = shown, fadeT0 = 0, fadeDur = 0, fadeEase = easeInOut, modeT0 = 0;
+  let lastKick = -1e9, freedAt = -1e9, noonAt = -1e9;
+  let look = WAITP.hd, shrug = null, glance = null, lastGlance = -1e9, shoveStep = 0, onDone = null, doneAt = Infinity;
+  // The nudge: on a touch screen, where nothing hovers, a visitor who has never played with the clock is shown
+  // once that it moves. After 5s on screen untouched the barista gives the minute hand two little pushes (swings
+  // it about 18° forward, releases, and nudges it again) while a faint glow runs along it. Remembered per
+  // visitor; any press first cancels it. Without motion only the glow shows.
+  const FOUND = `storefront:${data.name}:clock-found`;
+  const found = () => { try { localStorage.setItem(FOUND, '1'); } catch { /* private mode */ } };
+  let armed = matchMedia('(hover: none), (pointer: coarse)').matches && (() => { try { return !localStorage.getItem(FOUND); } catch { return true; } })();
+  let nudge = null;
+  const NUDGE = [[0, 0], [280, 0.9], [460, 0.25], [700, 1], [820, 1], [1300, 0]];
+  const nudgeAt = (u) => {
+    for (let i = 1; i < NUDGE.length; i++) {
+      const [t0, v0] = NUDGE[i - 1], [t1, v1] = NUDGE[i];
+      if (u <= t1) return v0 + (v1 - v0) * easeInOut((u - t0) / (t1 - t0));
+    }
+    return 0;
+  };
+  const hint = () => {
+    const g = groups.m.find((x) => x.hasAttribute('data-clock-hit'));
+    if (!g) return;
+    g.classList.remove('is-hint');
+    void g.getBoundingClientRect();
+    g.classList.add('is-hint');
+    setTimeout(() => g.classList.remove('is-hint'), 1500);
+  };
+  const disarm = () => { if (armed) { armed = false; found(); } };
+  let retFrom = HOME, retDur = 400, retBody = PUSH;
+
+  const setMode = (m, fadeMs = 0, ease = easeInOut) => { mode = m; modeT0 = now; from = { ...shown }; fadeT0 = now; fadeDur = fadeMs; fadeEase = ease; };
+  const finish = () => { const d = onDone; onDone = null; doneAt = Infinity; d?.(); };
+  const free = (w0) => { H.m.w = w0; H.m.q = 0; freedAt = now; look = shown.hd; setMode('free', 420, easeOut); };
+  const turn = (k) => { const v = `rotate(${H[k].a.toFixed(2)} ${cx} ${cy})`; for (const g of groups[k]) g.setAttribute('transform', v); };
+  const hop = () => { if (!noon) return; noon.classList.remove('is-hop'); void noon.getBoundingClientRect(); noon.classList.add('is-hop'); };
+
+  // The pose the mode wants now; the screen fades into it from wherever it was.
+  function target() {
+    const t = now - modeT0;
+    if (mode === 'held') {
+      const ph = (t / 4000) * Math.PI * 2, s = Math.sin(ph);
+      const p = { ...PUSH, sp: PUSH.sp + 1.6 * s, sF: PUSH.sF - 2.4 * s, eF: PUSH.eF + 1.4 * s, hd: PUSH.hd + 2.2 * Math.sin(ph + 0.6), bob: -0.9 * (1 - Math.cos(ph)) };
+      if (nudge === null) return p;
+      // Two little pushes: the barista leans in and nudges the hand a few degrees forward, back, and again.
+      const sp = p.sp + 5;
+      return mixPose(p, { ...p, sp, hd: p.hd - 10, ...reachTo(...at(HOME + 18, R), { sp, y: p.y + p.bob, bend: -1 }) }, nudgeAt(now - nudge));
+    }
+    if (mode === 'shove') return poseOf(shoveStep === 0 ? 'shoveBack' : 'shoveOut');
+    if (mode === 'return') {
+      const e = easeInOut(clamp(t / retDur, 0, 1));
+      const b = mixPose(retBody, PUSH, e);
+      return { ...b, ...reachTo(...at(retFrom + (HOME - retFrom) * e, R), { sp: b.sp, y: b.y + b.bob, bend: -1 }) };
+    }
+    const ph = (now / 4000) * Math.PI * 2;
+    let p = { ...WAITP, sp: WAITP.sp + 1.1 * Math.sin(ph), sB: WAITP.sB + 1.5 * Math.sin(ph + 1), bob: -0.8 * (1 - Math.cos(ph)), hd: look };
+    // Waiting for the hand to come round: now and then a look at the watch.
+    if (glance !== null) {
+      const u = now - glance;
+      const k = u < 300 ? easeOut(u / 300) : u < 1000 ? 1 : u < 1400 ? 1 - easeInOut((u - 1000) / 400) : 0;
+      p = mixPose(p, { ...p, sF: GLANCE.sF, eF: GLANCE.eF, hd: GLANCE.hd }, k);
+    }
+    if (shrug !== null) {
+      const u = now - shrug;
+      const k = u < 260 ? easeOut(u / 260) : u < 560 ? 1 : u < 920 ? 1 - easeInOut((u - 560) / 360) : 0;
+      p = mixPose(p, { ...p, sF: SHRUG.sF, eF: SHRUG.eF, sB: SHRUG.sB, eB: SHRUG.eB, y: SHRUG.y, hd: look - 8 }, k);
+    }
+    if (mode === 'catch') {
+      const sp = p.sp + 6;
+      p = { ...p, sp, ...reachTo(...at(H.m.a, R), { sp, y: p.y + p.bob, bend: -1 }) };
+    }
+    return p;
+  }
+  // One fixed step of a hand: the pending push runs into the velocity, friction pulls it toward `creep`.
+  function spin(hd, h, creep = hd.creep, tau = hd.tau) {
+    const tr = hd.q * (1 - Math.exp(-h / hd.rise));
+    hd.q -= tr;
+    hd.w = clamp(creep + (hd.w + tr - creep) * Math.exp(-h / tau), -hd.max, hd.max);
+    hd.a = wrap(hd.a + hd.w * h);
+    if (!Number.isFinite(hd.a) || !Number.isFinite(hd.w) || !Number.isFinite(hd.q)) Object.assign(hd, { a: 0, w: 0, q: 0 });
+  }
+  function sim(h) {
+    now += h * 1000;
+    spin(H.h, h);
+    if (mode === 'free' || mode === 'catch') {
+      const was = H.m.a;
+      if (mode === 'catch') spin(H.m, h, 0, 0.09); else spin(H.m, h);
+      if (was < 0 && H.m.a >= 0 && now - noonAt > 380) { noonAt = now; hop(); }
+      if (mode === 'free' && shrug === null && now - Math.max(lastKick, freedAt) > 450 && H.m.a >= REACH[0] && H.m.a <= REACH[1] && H.m.w < 140) {
+        H.m.q = 0;
+        setMode('catch', 220, easeOut);
+      }
+    }
+    if (shrug !== null && now - shrug > 920) shrug = null;
+    if (nudge !== null && now - nudge > 1300) nudge = null;
+    else if (armed && mode === 'held' && now >= 5000) { disarm(); nudge = now; hint(); }
+    if (glance !== null && now - glance > 1400) glance = null;
+    else if (mode === 'free' && glance === null && shrug === null && Math.abs(H.m.w) < 20 && now - Math.max(lastKick, freedAt, lastGlance) > 7500) { glance = now; lastGlance = now; }
+    if (onDone && now >= doneAt) finish();
+    const t = now - modeT0;
+    if (mode === 'catch' && t >= 220) { retFrom = H.m.a; retDur = clamp(Math.abs(HOME - retFrom) * 14, 380, 900); retBody = { ...shown }; setMode('return'); }
+    else if (mode === 'return' && t >= retDur) setMode('held', 300);
+    else if (mode === 'shove' && t >= fadeDur) {
+      if (shoveStep === 0) { shoveStep = 1; setMode('shove', 130, easeIn); }
+      else { free(185); H.m.q = 290; doneAt = now + 500; }
+    }
+  }
+  function render(dt) {
+    let p = target();
+    if (fadeDur > 0 && now - fadeT0 < fadeDur) p = mixPose(from, p, fadeEase(clamp((now - fadeT0) / fadeDur, 0, 1)));
+    shown = p;
+    applyPose(svg, p);
+    if (mode === 'free' || mode === 'catch') look += (gaze(p) - look) * (1 - Math.exp(-dt / 0.14));
+    else H.m.a = aim(p);
+    turn('m'); turn('h');
+  }
+  function tick(t) {
+    raf = requestAnimationFrame(tick);
+    const dt = clamp((t - last) / 1000, 0, 0.05);
+    last = t;
+    acc += dt;
+    for (let n = 0; acc >= STEP && n < 8; n++) { acc -= STEP; sim(STEP); }
+    render(dt);
+  }
+  const start = () => { if (raf || reduceMotion) return; last = performance.now(); raf = requestAnimationFrame(tick); };
+  const stop = () => { cancelAnimationFrame(raf); raf = 0; };
+
+  // Without motion a press sets a hand on by five minutes or an hour, at once; set back within reach, the
+  // minute hand is the barista's again.
+  function setOn(k) {
+    H[k].a = wrap(H[k].a + 30);
+    if (k === 'm') {
+      const back = H.m.a >= REACH[0] && H.m.a <= HOME + 1;
+      if (back) { applyPose(svg, PUSH); H.m.a = aim(PUSH); mode = 'held'; }
+      else { mode = 'free'; applyPose(svg, { ...WAITP, hd: gaze(WAITP) }); }
+    }
+    turn('m'); turn('h');
+    fade(groups[k][0]);
+  }
+  function kick(k) {
+    disarm();
+    if (reduceMotion) return setOn(k);
+    const hd = H[k];
+    if (k === 'm') {
+      if (mode === 'held' || mode === 'return' || mode === 'shove') { finish(); free(0); }
+      else if (mode === 'catch') setMode('free', 260, easeOut);
+      lastKick = now;
+    }
+    hd.q += hd.kick * Math.max(0, 1 - (hd.w + hd.q) / hd.max);
+    start();
+  }
+  function react() {
+    disarm();
+    return new Promise((resolve) => {
+      if (mode === 'held') { onDone = resolve; doneAt = Infinity; shoveStep = 0; setMode('shove', 200); }
+      else if (mode === 'free' && shrug === null) { onDone = resolve; shrug = now; doneAt = now + 920; }
+      else resolve();
+      start();
+    });
+  }
+  // Take over from the entrance: the hands answer to the clock now, not to the pose.
+  groups.m.forEach((g) => g.removeAttribute('data-aim'));
+  if (reduceMotion && armed) setTimeout(() => { if (armed) { disarm(); hint(); } }, 5000);
+  return { start, stop, kick, react, groups };
+}
+
+let tk = null;
+let heroOnScreen = !('IntersectionObserver' in window);
+function heroTakeover() {
+  if (!heroScene || tk) return;
+  tk = timekeeper(heroFigure);
+  if (!tk) return;
+  // The scene is now something to play with: it leaves the accessibility tree's shadow as a group of buttons.
+  heroFigure.removeAttribute('aria-hidden');
+  heroFigure.setAttribute('role', 'group');
+  heroFigure.setAttribute('aria-label', 'The bean o’clock clock');
+  for (const g of $$('[data-clock-hit]', heroFigure)) {
+    const k = g.dataset.clockHit;
+    g.classList.add('is-live');
+    g.setAttribute('role', 'button');
+    g.setAttribute('tabindex', '0');
+    g.setAttribute('aria-label', k === 'm' ? 'Minute hand: give it a push' : 'Hour hand: give it a push');
+    onPress(g, () => tk.kick(k));
+  }
+  mascot($('.f-hit', heroFigure), { label: 'Barista: push the clock round', act: () => tk.react(), faded: $('.figure__body', heroFigure) });
+  if (heroOnScreen) tk.start();
+}
+if (heroScene && 'IntersectionObserver' in window) {
+  new IntersectionObserver(([en]) => { heroOnScreen = en.isIntersecting; if (!tk) return; if (en.isIntersecting) tk.start(); else tk.stop(); }).observe(heroBox);
+}
+if (enterHero && heroScene && !reduceMotion) {
+  applyPose(heroFigure, poseOf('pushStart'));
+  setTimeout(() => pose(heroFigure, 'push', { dur: 1150 }).then(() => { if (!heroDone) { heroLanded(); heroTakeover(); } }), 450);
+  setTimeout(() => { if (!heroDone) { applyPose(heroFigure, poseOf('push')); heroLanded(); heroTakeover(); } }, 3300);
+} else if (enterHero && heroFigure && !reduceMotion) {
   const walkIn = 1500;
   heroFigure.classList.add('is-mirror');
   applyPose(heroFigure, poseOf('carry'));
@@ -755,82 +1223,217 @@ if (enterHero && heroFigure && !reduceMotion) {
 } else if (enterHero) {
   setTimeout(heroLanded, reduceMotion ? 0 : 2800);
 }
+if (heroScene && (reduceMotion || !enterHero)) heroTakeover();
 
-/* ---------- The usual: the barista on the arch takes a sip now and then ---------- */
+/* ---------- The usual: the barista on the arch takes a sip now and then; tapped, it raises a toast ----------
+   The cup goes up, clinks (a quick lift with the cup tipped), holds, and comes back down to the knee. */
 const usualFigure = $('[data-figure-idle="sip"] [data-figure]');
+const usualM = usualFigure && mascot(usualFigure.parentElement, {
+  label: 'Barista: raise a toast',
+  act: () => {
+    const up = poseOf('sitToast');
+    return beats(usualFigure, [
+      { to: up, dur: 260 },
+      { to: { ...up, sF: up.sF - 8, cup: up.cup + 18, y: up.y - 3, hd: up.hd - 4 }, dur: 140, ease: easeBack },
+      { to: up, dur: 170 },
+      220,
+      { to: 'sit', dur: 420 },
+    ]);
+  },
+});
 if (usualFigure && !reduceMotion) {
-  let sipping = null;
-  const sip = async () => { await pose(usualFigure, 'sitSip', { dur: 700 }); await new Promise((r) => setTimeout(r, 1100)); await pose(usualFigure, 'sit', { dur: 700 }); };
-  seen(usualFigure, () => { sip(); sipping = setInterval(sip, 6500); }, { threshold: 0.6 });
+  let sipUntil = 0, onScreen = !('IntersectionObserver' in window);
+  if (!onScreen) new IntersectionObserver(([en]) => { onScreen = en.isIntersecting; }).observe(usualFigure);
+  const sip = async () => {
+    if (!onScreen || usualM?.busy || Date.now() < sipUntil) return;
+    sipUntil = Date.now() + 3200;
+    await pose(usualFigure, 'sitSip', { dur: 700 });
+    await wait(1100);
+    if (!usualM?.busy) pose(usualFigure, 'sit', { dur: 700 });
+  };
+  seen(usualFigure, () => { sip(); setInterval(sip, 6500); }, { threshold: 0.6 });
 }
 
-/* ---------- Visit: the barista walks in along the route, stops, and points to the pin ---------- */
+/* ---------- Visit: the barista rides in a short way on the scooter, then the route runs out to the pin ----------
+   The scooter stays put after that and idles, revving now and then (CSS loop); it runs only while on screen. */
 const visitHead = $('[data-visit]');
 const visitBox = $('[data-visit-figure]');
-const visitFigure = visitBox && $('[data-figure]', visitBox);
+const ride = visitBox && $('.moto', visitBox);
 if (visitHead) {
-  const arrive = () => {
-    if (!visitFigure || reduceMotion) { visitHead.classList.add('is-pointing'); return; }
-    const dist = Math.min(innerWidth * 0.5, 520);
-    visitBox.style.translate = `${-dist}px 0`;
-    applyPose(visitFigure, poseOf('carry'));
-    void visitBox.offsetWidth;
-    walk(visitFigure);
-    visitBox.style.transition = 'translate 1400ms cubic-bezier(0.3, 0.1, 0.35, 1)';
-    visitBox.style.translate = '0 0';
-    setTimeout(() => {
-      pose(visitFigure, 'point', { dur: 700 });
-      setTimeout(() => visitHead.classList.add('is-pointing'), 350);
-    }, 1400);
-  };
-  if (visitFigure && !reduceMotion) { visitBox.style.translate = `${-Math.min(innerWidth * 0.5, 520)}px 0`; applyPose(visitFigure, poseOf('carry')); }
-  seen(visitHead, arrive, { threshold: 0.6 });
+  if (!ride || reduceMotion) visitHead.classList.add('is-pointing');
+  else {
+    visitBox.style.translate = '-96px 0';
+    seen(visitHead, () => {
+      ride.classList.add('is-riding');
+      void visitBox.offsetWidth;
+      visitBox.style.transition = 'translate 1100ms cubic-bezier(0.2, 0.7, 0.3, 1)';
+      visitBox.style.translate = '0 0';
+      setTimeout(() => visitHead.classList.add('is-pointing'), 650);
+    }, { threshold: 0.6 });
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(([en]) => { if (visitHead.classList.contains('is-pointing') || en.isIntersecting) ride.classList.toggle('is-riding', en.isIntersecting); }).observe(ride);
+    }
+  }
+}
+// Tapped, it revs: the rider's head snaps back, the front lifts, the buzz hardens, a big puff and speed lines,
+// then it settles back into its idle (CSS, .is-revving). The hands stay on the grips: nothing moves the arms.
+mascot(ride && visitBox, {
+  scene: true,
+  label: 'Scooter: rev the engine',
+  ready: () => visitHead?.classList.contains('is-pointing'),
+  act: async () => {
+    ride.classList.remove('is-revving');
+    void ride.getBoundingClientRect();
+    ride.classList.add('is-revving');
+    await wait(1150);
+  },
+  reset: () => ride.classList.remove('is-revving'),
+});
+
+/* ---------- Footer: the barista leaning on the stamp raises its cup and waves goodbye, once; tapped, again ---------- */
+const footFigure = $('.footer__figure [data-figure]');
+const waveBye = async (lead = 300, swings = 1) => {
+  await pose(footFigure, 'wave', { dur: lead });
+  const wave = POSES.wave?.eF ?? -34, hd = POSES.wave?.hd ?? -12;
+  loop(footFigure, 'wave', (ph) => ({ eF: wave + 22 * Math.sin(ph), hd: hd + 3 * Math.sin(ph) }), 520);
+  await wait(520 * swings);
+  await pose(footFigure, 'lean', { dur: 420 });
+};
+const footM = footFigure && mascot(footFigure.parentElement, { label: 'Barista: wave goodbye', act: () => waveBye(300, 1) });
+if (footFigure && !reduceMotion) {
+  seen(footFigure, () => { if (!footM?.busy) waveBye(520, 3); }, { threshold: 0.7 });
 }
 
-/* ---------- What goes in the cup: the three scenes play in turn as the section arrives ----------
-   Tamp (two presses, a puff each), the arrow, the shot runs while the barista checks the watch, the arrow,
-   the jug tips and a heart blooms in the cup. Without motion everything is shown done. */
+/* ---------- Order band: hover or focus "Order ahead" and the barista takes a second look at the watch ----------
+   Tapped: right on time. Wrist up to the watch, a nod, and the pickup bag held up, ready. */
+const orderM = clockFigure && mascot(clockFigure.parentElement, {
+  label: 'Barista: your order, right on time',
+  act: () => {
+    const check = poseOf('watchCheck');
+    return beats(clockFigure, [
+      { to: check, dur: 220 },
+      100,
+      { to: { ...check, hd: check.hd + 12 }, dur: 130 },
+      { to: check, dur: 140 },
+      { to: 'orderShow', dur: 280, ease: easeBack },
+      260,
+      { to: 'watch', dur: 400 },
+    ]);
+  },
+});
+if (clockFigure && !reduceMotion) {
+  let lookUntil = 0;
+  const look = async () => {
+    if (orderM?.busy || Date.now() < lookUntil) return;
+    lookUntil = Date.now() + 1300;
+    await pose(clockFigure, 'watchCheck', { dur: 260 });
+    await wait(520);
+    if (!orderM?.busy) pose(clockFigure, 'watch', { dur: 420 });
+  };
+  $$('.close__actions [data-open-order]').forEach((b) => { b.addEventListener('pointerenter', look); b.addEventListener('focus', look); });
+}
+
+/* ---------- What goes in the cup: three frames of one small film, played in turn as the section arrives ----------
+   TAMP presses twice (the mound squashes on the first, impact ticks on each), the arrow, PULL brings the lever
+   down from overhead and the shot runs, the arrow, POUR tips the jug, the milk runs and a heart blooms.
+   Without motion everything is shown done; if play stalls (a background tab) it is shown done anyway. */
 const proc = $('[data-process]');
 if (proc) {
   const steps = $$('[data-step]', proc);
   const links = $$('.process__link', proc);
   const fig = (el) => el && $('[data-figure]', el);
-  const showAll = () => [...steps, ...links].forEach((el) => el.classList.add('is-on'));
+  let procReady = false;
+  const showAll = () => {
+    procReady = true;
+    [...steps, ...links].forEach((el) => el.classList.add('is-on', 'is-pressed', 'is-flow', 'is-done'));
+    steps.forEach((s) => { const f = fig(s); if (f && f._pose) { stopMotion(f); applyPose(f, poseOf(f.dataset.pose)); } });
+  };
+  // Once the film has played, each frame answers a tap with its own job, done again: the whole scene is the
+  // target (the machine and the jug are part of the act). TAMP raises the tamper clear and drives it down, with
+  // a jolt and the impact ticks. PULL takes the lever back up (the shot stops), brings it down again and the
+  // shot runs. POUR tips the jug back, then pours: the milk runs, the splash and the heart come again.
+  const ACTS = {
+    tamp: (s, f) => beats(f, [
+      () => s.classList.remove('is-done'),
+      { to: 'tampHigh', dur: 240 },
+      { to: 'tampDown', dur: 110, ease: easeIn },
+      () => s.classList.add('is-tamp'),
+      { to: { ...poseOf('tampDown'), y: (POSES.tampDown?.y || 0) + 1.5 }, dur: 70 },
+      { to: 'tampDown', dur: 150 },
+      160,
+      () => s.classList.remove('is-tamp'),
+    ]),
+    pull: (s, f) => beats(f, [
+      () => s.classList.remove('is-flow'),
+      { to: 'pullReady', dur: 380 },
+      80,
+      { to: 'pull', dur: 420, ease: easeIn },
+      () => s.classList.add('is-flow'),
+      { to: { ...poseOf('pull'), hd: (POSES.pull?.hd || 0) - 8 }, dur: 160, ease: easeBack },
+      { to: 'pull', dur: 300 },
+    ]),
+    pour: (s, f) => beats(f, [
+      () => s.classList.remove('is-flow'),
+      { to: 'pourReady', dur: 320 },
+      60,
+      { to: 'pour', dur: 460 },
+      () => s.classList.add('is-flow'),
+      600,
+    ]),
+  };
+  const LABEL = { tamp: 'Tamp: press the coffee down', pull: 'Pull: pull a shot', pour: 'Pour: pour the milk' };
+  steps.forEach((s, i) => {
+    const k = s.dataset.step, f = fig(s);
+    if (!ACTS[k] || !f) return;
+    mascot($('.process__scene', s), {
+      scene: true,
+      label: LABEL[k],
+      // A frame is free once the film has moved on to the next one (the last, once the film is done).
+      ready: () => procReady || !!steps[i + 1]?.classList.contains('is-on'),
+      act: () => ACTS[k](s, f),
+      reset: () => { s.classList.add('is-on', 'is-pressed', 'is-flow', 'is-done'); s.classList.remove('is-tamp'); },
+    });
+  });
   if (reduceMotion || !('IntersectionObserver' in window) || steps.length < 3) showAll();
   else {
     const [tamp, pull, pour] = steps;
     const wait = (ms) => new Promise((r) => setTimeout(r, ms));
     applyPose(fig(tamp), poseOf('tampUp'));
-    applyPose(fig(pull), poseOf('carry'));
+    applyPose(fig(pull), poseOf('pullReady'));
     applyPose(fig(pour), poseOf('pourReady'));
+    let done = false;
     const play = async () => {
       tamp.classList.add('is-on');
       for (let i = 0; i < 2; i++) {
-        await pose(fig(tamp), 'tampDown', { dur: 240 });
-        tamp.classList.add('is-tamp');
-        await wait(180);
+        await pose(fig(tamp), 'tampDown', { dur: 260 });
+        tamp.classList.add('is-tamp', 'is-pressed');
+        await wait(200);
         tamp.classList.remove('is-tamp');
-        if (i === 0) await pose(fig(tamp), 'tampUp', { dur: 260 });
+        if (i === 0) await pose(fig(tamp), 'tampUp', { dur: 280 });
       }
+      tamp.classList.add('is-done');
       links[0]?.classList.add('is-on');
-      await wait(450);
+      await wait(420);
       pull.classList.add('is-on');
-      await pose(fig(pull), 'watch', { dur: 700 });
-      await wait(600);
+      await pose(fig(pull), 'pull', { dur: 720 });
+      pull.classList.add('is-flow');
+      await wait(1100);
       links[1]?.classList.add('is-on');
-      await wait(450);
+      await wait(420);
       pour.classList.add('is-on');
-      await pose(fig(pour), 'pour', { dur: 800 });
+      await pose(fig(pour), 'pour', { dur: 760 });
+      pour.classList.add('is-flow');
+      done = true;
+      procReady = true;
     };
-    // If the page is captured or backgrounded mid-play, the steps still end shown.
-    seen(proc, () => { play(); setTimeout(showAll, 6000); }, { threshold: 0.35 });
+    seen(proc, () => { play(); setTimeout(() => { if (!done) showAll(); }, 7500); }, { threshold: 0.35 });
   }
 }
 
 /* ---------- The thread: one crema line, drawn by the scroll, from the hero's hill down to the usual's arch,
    where it becomes the arch's frame. Wide screens only: on a phone it would cross the words. ---------- */
 const threadEnd = $('[data-thread-end]');
-const sun = $('.hero__sun');
+const sun = $('.hero__sun') || $('.hero__scene');
 let thread = null;
 function layoutThread() {
   if (!threadEnd || !sun) return;
@@ -912,7 +1515,6 @@ function scrollMotion() {
 let ticking = false;
 function onScroll() {
   nav?.toggleAttribute('data-scrolled', scrollY > 8);
-  updateIndex();
   scrollMotion();
   ticking = false;
 }

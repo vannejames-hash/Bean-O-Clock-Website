@@ -1,98 +1,199 @@
-/* Menu: a working list, not a picture of one */
-.menu { padding-bottom: calc(var(--pad) - 24px); }
-.menu__head { position: relative; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 24px; align-items: end; }
+/* ---------------------------------------------------------------------------------------------
+   The whole board: one menu board, one list at a time, after the shop's own boards.
+   Five tags on top, stuck on by hand, each with its list's cup, its name and how many drinks it holds; the
+   picked one is green and straight, the crema minute track under it. Under them the board itself, 16:9 on a
+   wide screen: a green plate that names the list and shows its picture and the barista holding its cup, and
+   the list on paper, in two columns with group labels and the coffee branch behind, as the boards print it.
+   The board never changes size: every list sits in the same cell, so the tallest sets it.
+   --------------------------------------------------------------------------------------------- */
+.menu { padding-bottom: var(--pad); }
+.menu__head { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 24px; align-items: end; }
 .menu__head .h2 { grid-column: 1 / span 6; }
-.menu__head .lede { grid-column: 7 / span 4; }
-/* The barista stands on the top edge of the category bar, gesturing down at the board. */
-.menu__figure { position: absolute; right: 0; bottom: -48px; width: clamp(104px, 9vw, 136px); translate: 0 6.6%; pointer-events: none; }
-.menu__figure .regular { width: 100%; height: auto; }
-.regular.is-mirror { scale: -1 1; }
+.menu__head .lede { grid-column: 8 / span 5; }
 
-.menu__index {
-  position: sticky;
-  top: var(--nav-h);
-  z-index: 30;
-  margin-top: 48px;
-  background: var(--c-ground);
-  border-block: 1px solid var(--c-line);
-}
-.menu__index ul { display: flex; gap: 32px; height: var(--index-h); align-items: center; overflow-x: auto; scrollbar-width: none; padding-inline: 14px; margin-inline: -14px; }
-.menu__index ul::-webkit-scrollbar { display: none; }
-.menu__index a {
-  position: relative; z-index: 1;
-  display: inline-flex; align-items: center; height: var(--index-h);
-  white-space: nowrap; text-decoration: none;
-  font-size: 15px; font-weight: 700;
-  color: var(--c-ink-soft);
-  transition: color 200ms ease;
-}
-.menu__index ul { position: relative; }
-/* One crema pill that travels between categories, rather than one highlight per link. */
-.menu__ink { position: absolute; left: 0; top: calc(50% - 18px); height: 36px; width: calc(var(--ink-w, 0) * 1px + 28px); border-radius: 999px; background: var(--c-crema-soft); translate: calc(var(--ink-x, 0px) - 14px) 0; opacity: var(--ink-on, 0); transition: translate 420ms var(--ease-drawer), width 420ms var(--ease-drawer), opacity 200ms ease; pointer-events: none; }
-.menu__index a[aria-current='true'] { color: var(--c-espresso); }
-@media (hover: hover) and (pointer: fine) { .menu__index a:hover { color: var(--c-ink); } }
+.board { --plate: 34%; --board-r: 26px; margin-top: clamp(28px, 3vw, 44px); }
+@media (min-width: 900px) { .board { container-type: inline-size; } }
 
-.menu__body { padding-top: 8px; }
-.cat {
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  gap: 24px;
-  padding-block: 64px;
-  border-bottom: 1px solid var(--c-line);
+/* The tags */
+.board__bar { position: relative; padding-bottom: 20px; }
+.board__tabs { display: flex; gap: 12px; }
+.board__tab {
+  --tab-bg: var(--c-paper); --tab-fg: var(--c-ink); --tab-edge: var(--c-line);
+  flex: 1 1 0; min-width: 0;
+  display: flex; align-items: center; gap: 11px;
+  min-height: 56px; padding: 7px 14px 7px 9px;
+  border-radius: 18px;
+  background: var(--tab-bg); color: var(--tab-fg);
+  box-shadow: inset 0 0 0 1.5px var(--tab-edge), 0 3px 0 var(--tab-edge);
+  text-align: left;
+  rotate: calc(var(--tilt, 0) * 1deg);
+  transition: rotate 380ms var(--ease-pop), translate 380ms var(--ease-pop), background-color 220ms ease, color 220ms ease, box-shadow 220ms ease;
 }
-.cat:last-child { border-bottom: 0; }
-.cat__head { grid-column: 1 / span 4; position: sticky; top: calc(var(--nav-h) + var(--index-h) + 32px); align-self: start; }
-.cat__note { margin-top: 12px; font-size: 16px; color: var(--c-ink-soft); max-width: 28ch; }
-/* Each heading's mark, where the shop's boards put a round icon: that category's cup on a paper disc. */
-.cat__mark { display: grid; place-items: center; width: 76px; height: 76px; margin-bottom: 18px; border-radius: 50%; background: var(--c-paper); box-shadow: inset 0 0 0 1.5px var(--c-line); }
-.cat__mark .ico { width: 54px; height: 54px; --fig-fill: var(--c-paper); }
-.cat .h3 { font-size: clamp(28px, 2.6vw, 38px); }
-.cat__groups { grid-column: 5 / span 5; }
-.cat__groups--split { grid-column: 5 / span 8; columns: 2; column-gap: 40px; }
-.group { break-inside: avoid; padding-bottom: 36px; }
-.group .label { margin-bottom: 8px; color: var(--c-brand-deep); }
+.board__mark { flex: none; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: var(--c-ground); box-shadow: inset 0 0 0 1.5px var(--c-line); transition: background-color 220ms ease, box-shadow 220ms ease, scale 420ms var(--ease-pop); }
+.board__mark .ico { width: 30px; height: 30px; --fig-line: var(--c-brand-deep); --fig-fill: var(--c-ground); }
+.board__tabtext { display: grid; min-width: 0; }
+.board__tabname { font-size: 15px; font-weight: 750; line-height: 1.18; }
+.board__tabcount { font-size: 13px; line-height: 1.3; color: var(--c-ink-soft); transition: color 220ms ease; }
+.board__tab[aria-selected='true'] { --tab-bg: var(--c-brand); --tab-fg: var(--c-on-brand); --tab-edge: var(--c-brand-deep); rotate: 0deg; translate: 0 -3px; }
+.board__tab[aria-selected='true'] .board__mark { background: var(--c-crema); box-shadow: none; }
+.board__tab[aria-selected='true'] .board__mark .ico { --fig-line: var(--c-espresso); --fig-fill: var(--c-crema); --fig-accent: var(--c-on-brand); }
+.board__tab[aria-selected='true'] .board__tabcount { color: var(--c-on-brand-soft); }
+.board__tab:active { translate: 0 1px; box-shadow: inset 0 0 0 1.5px var(--tab-edge), 0 1px 0 var(--tab-edge); }
+.board__tab:focus-visible { outline-offset: 4px; border-radius: 18px; }
+@media (hover: hover) and (pointer: fine) {
+  .board__tab:hover { rotate: 0deg; translate: 0 -2px; }
+  .board__tab[aria-selected='true']:hover { translate: 0 -3px; }
+  .board__tab:active { translate: 0 1px; }
+}
+/* The crema minute track under the picked tag; app.js places it. */
+.board__hand { position: absolute; left: 0; bottom: 2px; width: calc(var(--hand-w, 0) * 1px); translate: var(--hand-x, 0) 0; opacity: var(--hand-on, 0); transition: translate 380ms var(--ease-drawer), width 380ms var(--ease-drawer), opacity 200ms ease; }
 
-.rows .row { border-bottom: 1px solid var(--c-line); }
-.row__btn {
-  width: 100%;
-  min-height: 60px;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto 44px;
-  align-items: center;
-  column-gap: 14px;
-  padding: 10px 0;
+/* The board */
+.board__stage {
+  position: relative; isolation: isolate;
+  display: grid; grid-template-columns: var(--plate) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr);
+  border-radius: var(--board-r);
+  background: var(--c-paper);
+  box-shadow: inset 0 0 0 1.5px var(--c-line), 0 4px 0 var(--c-line);
+}
+.board__plate { grid-area: 1 / 1; border-radius: var(--board-r) 0 0 var(--board-r); }
+/* The coffee branch behind the lists, as on the shop's boards: faint, and large enough to hold the paper a
+   short list leaves empty. */
+.board__art { position: absolute; z-index: 0; right: 0; bottom: 0; width: min(46%, 520px); color: var(--c-brand-deep); opacity: 0.11; pointer-events: none; overflow: hidden; border-radius: 0 0 var(--board-r) 0; }
+.board__art .branch { width: 112%; margin: 0 -4% -8% 0; }
+
+/* A link to #cat-<list> lands with the tags still in view above it. */
+.board__panel { position: relative; z-index: 1; display: grid; grid-template-columns: var(--plate) minmax(0, 1fr); scroll-margin-top: 80px; }
+.board__panel + .board__panel { border-top: 1.5px solid var(--c-line); }
+.board__intro { position: relative; display: flex; flex-direction: column; min-width: 0; padding: 30px 32px 0; background: var(--c-brand); color: var(--c-on-brand); }
+.board__no { display: flex; align-items: baseline; gap: 0.45em; font-size: 12.5px; font-weight: 800; letter-spacing: 0.16em; color: var(--c-crema); font-variant-numeric: tabular-nums; }
+.board__no .board__roll { display: inline-block; }
+.board__of { color: var(--c-on-brand-soft); }
+.board__title { margin-top: 10px; font-family: var(--font-display); font-weight: var(--display-wght, 760); font-variation-settings: 'SOFT' 100; font-size: clamp(32px, 2.9vw, 42px); line-height: 1; letter-spacing: -0.025em; text-wrap: balance; }
+/* The line a title rolls through when the board changes, like the letters of a sign board. */
+.board__roll { display: block; overflow: clip; overflow-clip-margin: 0.14em; padding-bottom: 0.1em; margin-bottom: -0.1em; }
+.board__roll > span { display: block; }
+.board__note { margin-top: 12px; max-width: 28ch; font-size: 16px; line-height: 1.45; color: var(--c-on-brand-soft); }
+.board__meta { margin-top: 10px; font-size: 14px; font-weight: 750; letter-spacing: 0.01em; }
+
+/* The face: the picture and the barista, standing on the foot of the plate. */
+.face { position: relative; margin-top: auto; height: min(48%, 320px); min-height: 230px; }
+.face__figure { position: absolute; z-index: 2; right: -4%; bottom: 0; width: 52%; pointer-events: none; }
+.face__figure .regular { width: 100%; height: auto; }
+.face--solo .face__figure { right: auto; left: 6%; width: 66%; }
+.face__photo { position: absolute; left: 0; bottom: 30px; width: 54%; aspect-ratio: 4 / 5; border-radius: 16px; overflow: hidden; background: var(--c-brand-deep); box-shadow: 0 0 0 6px var(--c-paper), 0 18px 26px -14px rgb(0 0 0 / 0.55); rotate: -4deg; }
+.face__photo img { width: 100%; height: 100%; object-fit: cover; }
+.face__stamp { position: absolute; left: 2%; bottom: 46px; width: 50%; rotate: -10deg; }
+/* The shop's poster drink, die-cut, its name and price under it: tapping it adds it, like its row. */
+.face__sticker { position: absolute; left: 0; bottom: 18px; width: 56%; display: grid; justify-items: center; gap: 14px; text-align: center; color: var(--c-on-brand); }
+.face__disc { display: block; width: 86%; aspect-ratio: 1; border-radius: 50%; overflow: hidden; background: var(--c-brand-deep); box-shadow: 0 0 0 6px var(--c-paper), 0 18px 26px -14px rgb(0 0 0 / 0.55); rotate: -5deg; transition: rotate 420ms var(--ease-pop), scale 420ms var(--ease-pop); }
+.face__disc img { width: 100%; height: 100%; object-fit: cover; scale: 1.06; }
+.face__label { display: grid; justify-items: center; gap: 3px; }
+.face__label .tag { margin: 0 0 4px; }
+.face__name { font-family: var(--font-display); font-style: italic; font-weight: 560; font-variation-settings: 'SOFT' 100; font-size: 19px; line-height: 1.1; letter-spacing: -0.015em; }
+.face__price { font-size: 14px; font-weight: 750; color: var(--c-on-brand-soft); font-variant-numeric: tabular-nums; }
+@media (hover: hover) and (pointer: fine) {
+  .face__sticker:hover .face__disc { rotate: 0deg; scale: 1.03; }
+}
+
+/* The list, on paper */
+.board__list { position: relative; z-index: 1; min-width: 0; padding: 26px 40px 24px; align-self: start; }
+.board__list--2 { columns: 2; column-gap: 40px; }
+.board__list--1 { max-width: 500px; }
+.board__group { break-inside: avoid; padding-bottom: 14px; }
+/* A list with one group runs on into the second column, a drink at a time. */
+.board__list--flow .board__group { break-inside: auto; }
+.board__list--flow .row { break-inside: avoid; }
+.board__label { display: flex; align-items: center; gap: 8px; margin-bottom: 2px; color: var(--c-brand-deep); font-size: 12px; font-weight: 800; line-height: 1.3; letter-spacing: 0.14em; text-transform: uppercase; }
+.board__label::before { content: ''; flex: none; width: 12px; height: 2px; border-radius: 2px; background: var(--c-crema); }
+.board__label .label__note { font-size: 12.5px; }
+
+.board .row__btn {
+  width: 100%; min-height: 42px; padding: 5px 0;
+  display: grid; grid-template-columns: minmax(0, max-content) minmax(14px, 1fr) auto 32px;
+  grid-template-areas: 'name dots price add' 'desc desc desc add';
+  align-items: center; column-gap: 10px;
   text-align: left;
 }
-.row__name { display: block; font-size: 17px; font-weight: 500; line-height: 1.35; }
-.row__desc { display: block; margin-top: 2px; font-size: 16px; line-height: 1.4; color: var(--c-ink-soft); }
-.row__price { font-variant-numeric: tabular-nums; font-size: 17px; font-weight: 500; }
-.row__add { grid-area: auto; width: 40px; height: 40px; }
-.row__btn--photo { grid-template-columns: 48px minmax(0, 1fr) auto 44px; }
-.row__thumb { width: 48px; height: 48px; border-radius: 50%; overflow: hidden; background: color-mix(in srgb, var(--c-ink) 6%, transparent); }
+.board .row__btn--photo { grid-template-columns: 30px minmax(0, max-content) minmax(14px, 1fr) auto 32px; grid-template-areas: 'thumb name dots price add' 'thumb desc desc desc add'; }
+.row__name { grid-area: name; font-size: 16px; font-weight: 550; line-height: 1.3; transition: translate 260ms var(--ease-out); }
+.row__name .tag { margin-left: 7px; padding: 2px 7px 1px; font-size: 10px; vertical-align: 1px; }
+/* The dotted leader from a drink to its price, as the boards set it. */
+.row__dots { grid-area: dots; align-self: center; height: 2px; background: radial-gradient(circle, color-mix(in srgb, var(--c-ink) 34%, transparent) 1px, transparent 1.4px) 0 50% / 6px 2px repeat-x; }
+.row__price { grid-area: price; font-size: 16px; font-weight: 650; font-variant-numeric: tabular-nums; }
+.row__desc { grid-area: desc; margin-top: -1px; font-size: 13.5px; line-height: 1.35; color: var(--c-ink-soft); }
+.board .row__add { grid-area: add; width: 32px; height: 32px; }
+.row__thumb { grid-area: thumb; width: 30px; height: 30px; border-radius: 50%; overflow: hidden; background: color-mix(in srgb, var(--c-ink) 6%, transparent); }
 .row__thumb img { width: 100%; height: 100%; object-fit: cover; scale: 1.1; transition: scale 500ms var(--ease-out); }
-.row__name { transition: translate 260ms var(--ease-out); }
+.row--static { display: grid; grid-template-columns: minmax(0, max-content) minmax(14px, 1fr) auto; grid-template-areas: 'name dots price'; align-items: center; column-gap: 10px; min-height: 42px; }
+/* Each row is a full-width target, 42px for a mouse; a touch screen gets room for a fingertip (the board grows). */
+@media (pointer: coarse) { .board .row__btn { min-height: 48px; } }
 @media (hover: hover) and (pointer: fine) {
   .row__btn:hover .row__name { translate: 4px 0; }
-  .row__btn:hover .row__thumb img { scale: 1.2; }
+  .row__btn:hover .row__thumb img { scale: 1.22; }
 }
 
-.cat--addons .addons { grid-column: 5 / span 8; display: grid; grid-template-columns: 1fr 1fr; column-gap: 40px; }
-.addons li { display: flex; justify-content: space-between; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--c-line); font-size: 17px; }
-
-@media (max-width: 1023px) {
-  .cat__groups, .cat__groups--split { grid-column: 5 / span 8; columns: 1; }
+/* With JS: one list at a time. Every list shares the board's one cell; the green plate stays put behind them. */
+@media (min-width: 900px) {
+  /* 16:9 of the board's width, but never taller than the screen leaves under the nav and the tags, so the tags
+     and the whole board are seen at once. A list longer than that grows it, for every list alike. */
+  .board__stage { min-height: min(56.25cqi, max(540px, calc(100svh - var(--nav-h) - 100px))); }
+  .js .board__panel { grid-area: 1 / 1 / 2 / 3; }
+  .js .board__panel + .board__panel { border-top: 0; }
+  .js .board__intro { background: none; }
+  .js .board__panel:not(.is-active) { visibility: hidden; }
 }
+@media (max-width: 1099px) and (min-width: 900px) {
+  .board { --plate: 31%; }
+  .board__tab { gap: 8px; padding-inline: 8px 10px; }
+  .board__mark { width: 34px; height: 34px; }
+  .board__mark .ico { width: 26px; height: 26px; }
+  .board__tabname { font-size: 14px; }
+  .board__intro { padding-inline: 24px; }
+  .board__list { padding-inline: 28px; }
+  .board__list--2 { column-gap: 28px; }
+  .row__name, .row__price { font-size: 15px; }
+}
+
+/* A phone: the same board, upright. The tags ride under the nav and scroll sideways; the picked list shows
+   its plate on top (words beside the picture and the barista) and its drinks in one column below. */
 @media (max-width: 899px) {
   .menu__head .h2, .menu__head .lede { grid-column: 1 / -1; }
-  .menu__head .lede { padding-right: 96px; }
-  .menu__figure { width: 92px; }
-  .cat { padding-block: 44px; row-gap: 20px; }
-  .cat__head { grid-column: 1 / -1; position: static; }
-  .cat__groups, .cat--addons .addons { grid-column: 1 / -1; }
-  .menu__index ul { gap: 24px; }
+  .board { margin-top: 20px; }
+  .board__bar { position: sticky; top: var(--nav-h); z-index: 20; margin-inline: calc(-1 * var(--gutter)); padding: 12px var(--gutter) 22px; background: var(--c-ground); overflow-x: auto; scrollbar-width: none; overscroll-behavior-x: contain; }
+  .board__bar::-webkit-scrollbar { display: none; }
+  .board__tabs { width: max-content; gap: 10px; }
+  .board__tab { flex: none; min-height: 54px; padding: 6px 14px 6px 7px; gap: 9px; }
+  .board__mark { width: 36px; height: 36px; }
+  .board__mark .ico { width: 27px; height: 27px; }
+  .board__tabname { white-space: nowrap; }
+  .board__stage { display: block; border-radius: 22px; }
+  .board__plate, .board__art { display: none; }
+  .board__panel { display: block; }
+  .js .board__panel:not(.is-active) { display: none; }
+  .board__intro { display: grid; grid-template-columns: minmax(0, 1fr) minmax(132px, 41%); grid-template-areas: 'no face' 'title face' 'note face' 'meta face'; align-content: start; column-gap: 10px; padding: 22px 20px 0; border-radius: 22px 22px 0 0; }
+  .board__panel + .board__panel .board__intro { border-radius: 0; }
+  .board__no { grid-area: no; }
+  .board__title { grid-area: title; font-size: clamp(28px, 8vw, 38px); }
+  .board__note { grid-area: note; font-size: 15px; }
+  .board__meta { grid-area: meta; margin-bottom: 20px; }
+  .face { grid-area: face; align-self: end; height: 184px; margin: 0 -8px 0 0; }
+  .face__photo { width: 58%; bottom: 22px; border-radius: 12px; box-shadow: 0 0 0 4px var(--c-paper), 0 12px 18px -10px rgb(0 0 0 / 0.5); }
+  .face__sticker { width: 64%; bottom: 16px; gap: 0; }
+  .face__disc { width: 100%; box-shadow: 0 0 0 4px var(--c-paper), 0 12px 18px -10px rgb(0 0 0 / 0.5); }
+  .face__label { display: none; }
+  .face__stamp { width: 60%; bottom: 30px; }
+  .face__figure { width: 60%; right: -4%; }
+  .face--solo .face__figure { left: auto; right: 4%; width: 74%; }
+  .board__list, .board__list--1 { max-width: none; padding: 16px 20px 18px; }
+  .board__list--2 { columns: 1; }
+  .board .row__btn { min-height: 52px; padding-block: 7px; }
+  .board .row__add { width: 36px; height: 36px; }
+  .board .row__btn { grid-template-columns: minmax(0, max-content) minmax(12px, 1fr) auto 36px; }
+  .board .row__btn--photo { grid-template-columns: 34px minmax(0, max-content) minmax(12px, 1fr) auto 36px; }
+  .row__thumb { width: 34px; height: 34px; }
+  .row--static { min-height: 48px; }
 }
-@media (max-width: 639px) {
-  .cat--addons .addons { grid-template-columns: 1fr; }
-  .menu__index .wrap { width: 100%; }
-  .menu__index ul { padding-inline: var(--gutter); margin-inline: 0; }
+@media (min-width: 640px) and (max-width: 899px) {
+  .board__list--2 { columns: 2; column-gap: 28px; }
 }

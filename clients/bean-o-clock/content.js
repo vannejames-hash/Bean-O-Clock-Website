@@ -51,10 +51,20 @@ export default {
 
   menu: {
     title: 'The whole board.',
-    lede: 'Every drink and every price on the board. Tap one to add it to your order.',
+    lede: 'Every drink and every price on the board. Pick a list, then tap a drink to add it to your order.',
     addOnsTitle: 'Add-ons',
-    // Each category's mark: its cup, drawn in the brand's pen.
-    marks: { espresso: 'hot', 'salty-cream': 'cloud', matcha: 'leaf', 'non-coffee': 'iced' },
+    addOnsNote: 'Add them to any drink when you order.',
+    // Each list's mark on its tag: its cup, drawn in the brand's pen.
+    marks: { espresso: 'hot', 'salty-cream': 'cloud', matcha: 'leaf', 'non-coffee': 'iced', 'add-ons': 'plus' },
+    // Each list's face on the board: one picture (a stand-in photograph, the shop's own poster drink, or the
+    // stamp) and the barista holding that list's cup. `item` makes the picture the drink's own add button.
+    faces: {
+      espresso: { image: 'glass', pose: 'sip', cup: 'hot' },
+      'salty-cream': { stamp: 'Salty cream on top · Salty cream on top ·', pose: 'cheers', cup: 'cloud' },
+      matcha: { item: 'matcha-oreo-latte', pose: 'present', cup: 'matcha' },
+      'non-coffee': { item: 'strawberry-oreo', pose: 'carry', cup: 'iced' },
+      'add-ons': { pose: 'tray', cup: 'tray', spare: 'syrup' },
+    },
   },
 
   coffee: {
@@ -62,7 +72,7 @@ export default {
     // The process, drawn: the barista at the counter, one scene a step (brand.js processScene).
     steps: [
       { scene: 'tamp', word: 'Tamp', note: 'Ground coffee, pressed level in the basket.' },
-      { scene: 'pull', word: 'Pull', note: 'Single or double, with one eye on the clock.' },
+      { scene: 'pull', word: 'Pull', note: 'Lever down: a single or double shot runs into the cup.' },
       { scene: 'pour', word: 'Pour', note: 'Iced or hot, salty cream on top if you like.' },
     ],
     claimIcons: { 'salty-cream': 'cloud', matcha: 'leaf', espresso: 'hot' },
@@ -109,43 +119,48 @@ export default {
   images: {
     logo: { src: 'logo.webp', w: 550, h: 550, alt: "Bean O' Clock Coffee To-Go logo" },
     mark: { src: 'logo-mark.webp', w: 300, h: 300, alt: '' },
+    // The enhanced set (compiled-photos/Enhanced Photos): generated stand-ins for the library photographs,
+    // cropped to their slots. Credited as generated on the credits page; none shows the shop.
     latte: {
-      src: 'photo-f61713250-disc.webp',
-      srcset: 'photo-f61713250-disc-440.webp 440w, photo-f61713250-disc.webp 820w',
-      w: 820, h: 820,
+      src: 'photo-g01-disc.webp',
+      srcset: 'photo-g01-disc-460.webp 460w, photo-g01-disc.webp 760w',
+      w: 760, h: 760,
       alt: 'A cappuccino seen from above, a tulip poured in the foam',
-      standIn: true,
+      standIn: true, generated: true,
     },
     glass: {
-      src: 'photo-m28146075.webp',
-      srcset: 'photo-m28146075-500.webp 500w, photo-m28146075-960.webp 960w, photo-m28146075.webp 1280w',
-      w: 1280, h: 1910, pos: '50% 58%',
-      alt: 'Espresso running into a small glass under the group head',
-      standIn: true,
+      src: 'photo-g03-720.webp',
+      srcset: 'photo-g03-420.webp 420w, photo-g03-720.webp 720w',
+      w: 720, h: 900,
+      alt: 'Espresso running from a double spout into a small glass',
+      standIn: true, generated: true,
     },
     stream: {
-      src: 'photo-m61713028.webp',
-      srcset: 'photo-m61713028-500.webp 500w, photo-m61713028-960.webp 960w, photo-m61713028.webp 1280w',
-      w: 1280, h: 853, pos: '60% 50%',
+      src: 'photo-g04-1280.webp',
+      srcset: 'photo-g04-640.webp 640w, photo-g04-1280.webp 1280w',
+      w: 1280, h: 853, pos: '62% 50%',
       alt: 'Espresso running from a bottomless portafilter in one thin stream',
-      standIn: true,
+      standIn: true, generated: true,
     },
     pour: {
-      src: 'photo-m61714648-960.webp',
-      srcset: 'photo-m61714648-500.webp 500w, photo-m61714648-960.webp 960w',
-      w: 960, h: 1433, pos: '62% 66%',
-      alt: 'Espresso poured from a small jug into a white cup on a wooden bar',
-      standIn: true,
+      src: 'photo-g02-1024.webp',
+      srcset: 'photo-g02-560.webp 560w, photo-g02-1024.webp 1024w',
+      w: 1024, h: 1280,
+      alt: 'Espresso poured from a small steel jug into a white cup, a glass of sparkling water beside it on a wooden bar',
+      standIn: true, generated: true,
     },
     tamp: {
-      src: 'photo-m187311853-1200.webp',
-      srcset: 'photo-m187311853-640.webp 640w, photo-m187311853-1200.webp 1200w',
-      w: 1200, h: 800, pos: '62% 50%',
+      src: 'photo-g05-1280.webp',
+      srcset: 'photo-g05-640.webp 640w, photo-g05-1280.webp 1280w',
+      w: 1280, h: 853, pos: '58% 50%',
       alt: "A barista's hands tamping ground coffee into a portafilter beside the machine",
-      standIn: true,
+      standIn: true, generated: true,
     },
-    whiteChocOreo: { src: 'drink-white-choc-oreo.webp', w: 500, h: 600, pos: '50% 40%', alt: 'White Chocolate with Oreo Cream in a tall glass on a marble table' },
-    strawberryOreo: { src: 'drink-strawberry-oreo.webp', w: 360, h: 360, pos: '50% 50%', alt: 'Strawberry Oreo Latte, pink strawberry under milk and crushed Oreo', round: true },
-    matchaOreo: { src: 'drink-matcha-oreo.webp', w: 360, h: 360, pos: '50% 50%', alt: 'Matcha Oreo Latte, green matcha under crushed Oreo', round: true },
+    // The shop's own poster drinks, enhanced for the web (compiled-photos/Enhanced Photos): the same drinks,
+    // glasses and tables, cropped square with each glass at the same size, colour kept near the posters'.
+    // The poster crops they replace are in assets/source/.
+    whiteChocOreo: { src: 'drink-white-choc-oreo-360.webp', srcset: 'drink-white-choc-oreo-360.webp 360w, drink-white-choc-oreo-640.webp 640w', w: 640, h: 640, alt: 'White Chocolate with Oreo Cream in a tall glass, crushed Oreo on top, on a marble table', round: true, enhanced: true },
+    strawberryOreo: { src: 'drink-strawberry-oreo-360.webp', srcset: 'drink-strawberry-oreo-360.webp 360w, drink-strawberry-oreo-640.webp 640w', w: 640, h: 640, alt: 'Strawberry Oreo Latte, strawberry under milk and crushed Oreo, Oreos on a plate beside it', round: true, enhanced: true },
+    matchaOreo: { src: 'drink-matcha-oreo-360.webp', srcset: 'drink-matcha-oreo-360.webp 360w, drink-matcha-oreo-640.webp 640w', w: 640, h: 640, alt: 'Matcha Oreo Latte, green matcha under milk and crushed Oreo', round: true, enhanced: true },
   },
 };

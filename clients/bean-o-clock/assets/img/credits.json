@@ -1,6 +1,66 @@
 {
- "note": "Credits for the photographs in this folder: photos.mjs credits prints the footer block for the ones the pages use.",
+ "note": "Credits for the images in this folder. Library photographs carry their licence; generated stand-ins (g ids) say so on the credits page. The build lists only the ones the page uses.",
  "photos": [
+  {
+   "file": "photo-g01-disc.webp",
+   "files": [
+    "photo-g01-disc.webp",
+    "photo-g01-disc-460.webp"
+   ],
+   "id": "g01",
+   "alt": "A cappuccino seen from above, a tulip poured in the foam",
+   "generated": true,
+   "source": "Generated for this demo (compiled-photos/Enhanced Photos)",
+   "replaces": "f61713250"
+  },
+  {
+   "file": "photo-g02-1024.webp",
+   "files": [
+    "photo-g02-1024.webp",
+    "photo-g02-560.webp"
+   ],
+   "id": "g02",
+   "alt": "Espresso poured from a small steel jug into a white cup, sparkling water beside it",
+   "generated": true,
+   "source": "Generated for this demo (compiled-photos/Enhanced Photos)",
+   "replaces": "m61714648"
+  },
+  {
+   "file": "photo-g03-720.webp",
+   "files": [
+    "photo-g03-720.webp",
+    "photo-g03-420.webp"
+   ],
+   "id": "g03",
+   "alt": "Espresso running from a double spout into a small glass",
+   "generated": true,
+   "source": "Generated for this demo (compiled-photos/Enhanced Photos)",
+   "replaces": "m28146075"
+  },
+  {
+   "file": "photo-g04-1280.webp",
+   "files": [
+    "photo-g04-1280.webp",
+    "photo-g04-640.webp"
+   ],
+   "id": "g04",
+   "alt": "Espresso running from a bottomless portafilter",
+   "generated": true,
+   "source": "Generated for this demo (compiled-photos/Enhanced Photos)",
+   "replaces": "m61713028"
+  },
+  {
+   "file": "photo-g05-1280.webp",
+   "files": [
+    "photo-g05-1280.webp",
+    "photo-g05-640.webp"
+   ],
+   "id": "g05",
+   "alt": "A barista’s hands tamping ground coffee into a portafilter",
+   "generated": true,
+   "source": "Generated for this demo (compiled-photos/Enhanced Photos)",
+   "replaces": "m187311853"
+  },
   {
    "file": "photo-m28146075.webp",
    "files": [

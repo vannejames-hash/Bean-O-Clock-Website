@@ -39,8 +39,9 @@ await cp(join(root, 'src', 'fonts'), join(out, 'assets', 'fonts'), { recursive: 
 const html = renderPage(ctx, { css });
 await writeFile(join(out, 'index.html'), html);
 
-// Ship only library photographs the page references; client files always ship.
-const usedPhoto = (name) => !/^photo-([mf]?\d+)/.test(name) || html.includes(name.match(/^photo-([mf]?\d+)/)[0]);
+// Ship only stand-in photographs (library: m/f ids, generated: g ids) the page references; client files always ship.
+const PHOTO = /^photo-([mfg]?\d+)/;
+const usedPhoto = (name) => !PHOTO.test(name) || html.includes(name.match(PHOTO)[0]);
 await cp(join(clientDir, 'assets', 'img'), join(out, 'assets', 'img'), {
   recursive: true,
   filter: (src) => !src.endsWith('.json') && usedPhoto(src.split(/[\\/]/).pop()),
@@ -51,10 +52,15 @@ const creditsFile = join(clientDir, 'assets', 'img', 'credits.json');
 if (existsSync(creditsFile)) {
   const { photos = [] } = JSON.parse(await readFile(creditsFile, 'utf8'));
   const e = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-  const list = photos
-    .filter((c) => html.includes(`photo-${c.id}`))
-    .map((c) => `<li><a href="${e(c.page)}">${e(c.alt)}</a> by ${e(c.by)}, ${c.licenceUrl ? `<a href="${e(c.licenceUrl)}">${e(c.licence)}</a>` : e(c.licence)}, via ${e(c.source)}. Cropped and resized.</li>`).join('\n');
-  await writeFile(join(out, 'credits.html'), `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Photo credits · ${ctx.business.fullName}</title><link rel="stylesheet" href="site.css"><style>:root{--c-ground:${ctx.theme.color.ground};--c-ink:${ctx.theme.color.ink}}</style></head><body class="credits"><main class="wrap"><h1 class="h2">Photo credits</h1><p>Stand-in photographs used until the shop supplies its own. Drink photographs and the logo belong to ${ctx.business.fullName}.</p><ul>${list}</ul><p><a href="index.html">Back to the storefront</a></p></main></body></html>`);
+  const used = photos.filter((c) => html.includes(`photo-${c.id}`));
+  const list = used
+    .map((c) => (c.generated
+      ? `<li>${e(c.alt)}: a generated image made for this demo, not a photograph taken at ${e(ctx.business.name)}.</li>`
+      : `<li><a href="${e(c.page)}">${e(c.alt)}</a> by ${e(c.by)}, ${c.licenceUrl ? `<a href="${e(c.licenceUrl)}">${e(c.licence)}</a>` : e(c.licence)}, via ${e(c.source)}. Cropped and resized.</li>`)).join('\n');
+  const intro = used.some((c) => c.generated)
+    ? `Stand-in images, used until the shop supplies its own photographs. The coffee pictures listed below were generated for this demo and do not show the shop, its staff or its drinks. The drink photographs from the shop's own posters${Object.values(ctx.content.images).some((i) => i.enhanced) ? ' (enhanced for the web: the same drinks, sharpened and relit)' : ''}, and the logo, belong to ${e(ctx.business.fullName)}.`
+    : `Stand-in photographs used until the shop supplies its own. Drink photographs and the logo belong to ${e(ctx.business.fullName)}.`;
+  await writeFile(join(out, 'credits.html'), `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Photo credits · ${ctx.business.fullName}</title><link rel="stylesheet" href="site.css"><style>:root{--c-ground:${ctx.theme.color.ground};--c-ink:${ctx.theme.color.ink}}</style></head><body class="credits"><main class="wrap"><h1 class="h2">Photo credits</h1><p>${intro}</p><ul>${list}</ul><p><a href="index.html">Back to the storefront</a></p></main></body></html>`);
 }
 
 console.log(`built dist/${client}/ (${styleFiles.length} stylesheets)`);

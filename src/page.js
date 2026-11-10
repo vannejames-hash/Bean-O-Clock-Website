@@ -101,6 +101,7 @@ export function renderPage(ctx, { css }) {
   ${dialogs(ctx)}
   <script type="application/json" id="store-data">${storeData(ctx)}</script>
   ${ctx.brand?.poses ? `<script type="application/json" id="figure-poses">${JSON.stringify(ctx.brand.poses)}</script>` : ''}
+  ${ctx.brand?.rig ? `<script type="application/json" id="figure-rig">${JSON.stringify(ctx.brand.rig)}</script>` : ''}
   <script type="module" src="app.js"></script>
 </body>
 </html>

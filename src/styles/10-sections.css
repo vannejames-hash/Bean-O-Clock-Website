@@ -96,8 +96,36 @@
 .hero__figure .regular { width: 100%; height: auto; }
 .hero__est { position: absolute; z-index: 3; left: calc(var(--sun) * 0.02); right: calc(var(--sun) * 0.02); top: calc(var(--sun) * 0.955); display: flex; justify-content: space-between; color: var(--c-on-brand-soft); font-size: 12px; font-weight: 800; letter-spacing: 0.24em; text-transform: uppercase; }
 
+/* The hero with a kit: the Timekeeper. The right half is the brand's own world: the barista, life-size for the
+   headline beside it, pushing the clock's minute hand toward the cup at twelve, over a faint paper of beans,
+   tiny clocks and cups that thins out round it and runs a little past the grid to the right. */
+.hero--scene .hero__grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1.02fr); column-gap: clamp(24px, 3vw, 56px); }
+.hero__stage--scene { width: 100%; height: auto; display: grid; justify-items: end; align-items: center; }
+.hero__scene { position: relative; z-index: 1; width: min(100%, 470px); }
+.hero__scene .regular { width: 100%; height: auto; }
+.hero__pattern {
+  position: absolute; z-index: 0; inset: -16% -46% -12% -28%; pointer-events: none;
+  color: color-mix(in srgb, var(--c-on-brand) 11%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 26%);
+          mask-image: linear-gradient(to right, transparent, #000 26%);
+}
+.hero__pattern .pattern { display: block; width: 100%; height: 100%; max-width: none; }
+.pattern use { fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+.pattern :is(path, circle) { vector-effect: non-scaling-stroke; }
+.pattern .pattern__dot { fill: currentColor; stroke: none; }
+.pattern .is-accent { color: color-mix(in srgb, var(--c-crema) 38%, transparent); }
+.hero-scene .hero__ring { fill: none; opacity: 0.24; }
+.hero-scene .hero__ticks line { stroke: var(--fig-line); stroke-width: calc(var(--lw) * 0.75); stroke-linecap: round; opacity: 0.45; }
+.hero-scene .hero__ticks line.long { stroke-width: var(--lw); opacity: 0.85; }
+.hero-scene .hero__groundline { fill: none; }
+.hero-scene .hero__est-t { fill: var(--c-on-brand-soft); stroke: none; font-family: var(--font-text); font-size: 10.5px; font-weight: 800; letter-spacing: 0.24em; }
+
 @media (max-width: 899px) {
   .hero { --sun: min(50vw, 230px); --crest: 48px; }
+  .hero--scene .hero__grid { grid-template-columns: minmax(0, 1fr); }
+  .hero__stage--scene { justify-items: center; }
+  .hero__scene { width: min(86vw, 360px); }
+  .hero__pattern { inset: -10% -30% -6% -30%; -webkit-mask-image: none; mask-image: none; }
   .hero__grid { grid-template-columns: minmax(0, 1fr); min-height: 0; padding-top: 16px; row-gap: 20px; }
   .hero__title { font-size: min(21cqi, 104px); }
   .hero__lede { margin-top: 16px; }
@@ -234,19 +262,26 @@
 .craft__head { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 24px; align-items: end; }
 .craft__title { grid-column: 1 / span 6; max-width: 12ch; }
 .craft__statement { grid-column: 7 / span 6; max-width: 46ch; }
-.process { margin-top: clamp(40px, 4.4vw, 64px); display: grid; grid-template-columns: minmax(0, 1fr) 56px minmax(0, 1fr) 56px minmax(0, 1fr); align-items: start; gap: 0 clamp(4px, 1vw, 16px); }
+.process { margin-top: clamp(32px, 3.6vw, 52px); display: grid; grid-template-columns: minmax(0, 1fr) 56px minmax(0, 1fr) 56px minmax(0, 1fr); align-items: start; gap: 0 clamp(4px, 1vw, 16px); }
 .process__scene svg { display: block; width: 100%; height: auto; }
 .process__scene .regular { --fig-line: var(--c-ground); --fig-fill: var(--c-espresso); }
 .scene .set .f-limb { stroke-width: calc(var(--lw) * 0.6); opacity: 0.5; }
 /* Streams scale with the drawing (not the one pen), so the dash that draws them measures true. */
 .scene .scene__stream { fill: none; stroke: var(--c-crema); stroke-width: 3.2; vector-effect: none; }
 .scene__heart { fill: var(--c-ground) !important; stroke: none !important; }
+/* The grounds in the basket: a mound before the tamp, pressed flat (into the basket) after it. */
+.scene .scene__grounds { fill: var(--fig-accent); stroke: none; transform-box: fill-box; transform-origin: 50% 100%; scale: 1 0.3; }
+.scene .scene__crema { transform-box: fill-box; transform-origin: center; }
+.scene .scene__lever { stroke-width: calc(var(--lw) * 1.8); }
+.scene :is(.scene__press, .scene__puff, .scene__splash) path { stroke: var(--fig-accent); }
+.scene .scene__steam path { stroke-dasharray: 12 22; opacity: 0.7; }
 .process__link { align-self: center; margin-top: -40px; }
 .process__arrow path { stroke: var(--c-crema); stroke-width: 2.2px; }
+/* The drawing leads; the word follows it, a step smaller than before, then the note. */
 .process__word {
-  margin-top: 14px; display: flex; align-items: center;
+  margin-top: 12px; display: flex; align-items: center;
   font-family: var(--font-display); font-style: italic; font-weight: 600; font-variation-settings: 'SOFT' 100;
-  font-size: clamp(30px, 2.8vw, 42px); line-height: 1; letter-spacing: -0.03em; color: var(--c-ground);
+  font-size: clamp(26px, 2.3vw, 34px); line-height: 1; letter-spacing: -0.03em; color: var(--c-ground);
 }
 .process__note { margin-top: 8px; max-width: 30ch; font-size: 16px; color: color-mix(in srgb, var(--c-ground) 72%, var(--c-espresso)); }
 .craft__no {
@@ -256,7 +291,7 @@
 }
 /* The boards' claims as three packaging labels, each its own die-cut: a hang tag with a punched hole,
    an oval jar label, an arch-topped bag label. Cream paper, the category's cup, the minute track on the tag. */
-.claims { margin-top: clamp(56px, 6vw, 88px); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(16px, 2vw, 28px); align-items: center; }
+.claims { margin-top: clamp(40px, 4.4vw, 64px); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(16px, 2vw, 28px); align-items: center; }
 .claim {
   position: relative; display: grid; align-content: start; justify-items: start; gap: 8px; height: 100%;
   padding: 34px 26px 24px; border-radius: var(--radius);
@@ -270,7 +305,7 @@
 .claims li:nth-child(1) .claim::before { content: ''; position: absolute; top: 16px; left: 50%; width: 16px; height: 16px; margin-left: -8px; border-radius: 50%; background: var(--c-espresso); box-shadow: 0 0 0 2px var(--c-crema); }
 .claims li:nth-child(1) .claim .ticks { display: block; position: absolute; top: 40px; left: 24px; right: 24px; }
 /* 2: the oval jar label, centred. */
-.claims li:nth-child(2) .claim { justify-items: center; text-align: center; border-radius: 50% / 42%; padding: 44px 13%; min-height: 300px; align-content: center; }
+.claims li:nth-child(2) .claim { justify-items: center; text-align: center; border-radius: 50% / 42%; padding: 40px 13%; min-height: 272px; align-content: center; }
 .claims li:nth-child(2) .claim__icon .ico { margin-inline: auto; }
 /* 3: the arch-topped bag label, centred, a crema band at its foot. */
 .claims li:nth-child(3) .claim { --tilt: 1.5; justify-items: center; text-align: center; border-radius: 50% 50% 18px 18px / 32% 32% 18px 18px; padding: 56px 24px 26px; box-shadow: inset 0 -8px 0 var(--c-crema); }
@@ -295,7 +330,7 @@
 }
 @media (max-width: 639px) {
   /* Each step on one row: the scene, then its words beside it. */
-  .process__step { display: grid; grid-template-columns: 52% minmax(0, 1fr); column-gap: 14px; align-items: center; }
+  .process__step { display: grid; grid-template-columns: 57% minmax(0, 1fr); column-gap: 12px; align-items: center; }
   .process__scene { grid-row: 1 / span 2; }
   .process__word { margin-top: 0; align-self: end; font-size: 30px; }
   .process__note { align-self: start; font-size: 15px; }
@@ -330,8 +365,13 @@
 .visit__head { display: flex; align-items: flex-end; gap: clamp(16px, 3vw, 48px); }
 .visit__title { flex: none; font-size: clamp(56px, 7.6vw, 116px); line-height: 0.82; padding-bottom: 0.04em; }
 .visit__route { flex: 1; min-width: 0; display: flex; align-items: flex-end; gap: 10px; color: var(--c-crema); padding-bottom: clamp(8px, 1.4vw, 22px); }
-.visit__figure { flex: none; width: clamp(110px, 10vw, 150px); margin-bottom: calc(-1 * clamp(110px, 10vw, 150px) * 0.067); }
-.visit__figure .regular { width: 100%; height: auto; }
+/* The barista rides to the shop on a small scooter, half-face helmet on; the road runs out of it to the pin. */
+.visit__moto { flex: none; width: clamp(176px, 16vw, 236px); margin-bottom: -2px; }
+.visit__moto .regular { width: 100%; height: auto; }
+.moto .moto__road { stroke-dasharray: 10 14; opacity: 0.5; }
+.moto :is(.moto__speed path, .moto__puff circle) { stroke: var(--fig-accent); }
+.moto .moto__puff circle { fill: var(--fig-fill); }
+.moto :is(.moto__speed, .moto__puff) { opacity: 0; }
 .visit__dash { flex: 1; min-width: 24px; height: 4px; margin-bottom: 4px; background: radial-gradient(circle, currentColor 2px, transparent 2.5px) 0 50% / 14px 4px repeat-x; }
 .visit__pin { flex: none; }
 .visit__pin .ico { width: clamp(44px, 4vw, 60px); height: auto; --fig-line: var(--c-brand-deep); }
@@ -356,7 +396,7 @@
 @media (max-width: 639px) {
   .visit__head { flex-direction: column; align-items: stretch; gap: 8px; }
   .visit__title { font-size: clamp(64px, 21vw, 100px); }
-  .visit__figure { width: 104px; }
+  .visit__moto { width: 158px; }
   .visit__cols { grid-template-columns: 1fr; }
   .visit__panel { padding: 36px 22px 22px; }
 }
